@@ -537,8 +537,6 @@ return {
     whatgame()
     initialize_fb()
   end,
-  ['registerFrameDone'] = function()
-    update_hitboxes()
-    render_hitboxes()
-  end
+  ['registerFrame'] = update_hitboxes,
+  ['registerFrameDone'] = render_hitboxes
 }

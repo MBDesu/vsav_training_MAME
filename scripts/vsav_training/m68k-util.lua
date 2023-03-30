@@ -23,7 +23,7 @@ local is_flag_set = function(flag)
   local sr = cpu.state[m68k.reg.SR].value
   local ccr_mask = get_ccr_mask(flag)
   if ccr_mask ~= nil then
-    return sr & ccr_mask == ccr_mask
+    return sr & ccr_mask >= ccr_mask
   end
   return false
 end
