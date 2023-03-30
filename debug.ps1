@@ -1,0 +1,1 @@
+.\mame.exe vsavj -pluginspath .\scripts\vsav_training -script .\scripts\vsav_training\main.lua -debug
