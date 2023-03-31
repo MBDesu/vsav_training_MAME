@@ -27,25 +27,25 @@ end
 
 local function write_u(addr, size, val)
   if size == BYTE then
-    return PROGRAM_MEMORY:writev_u8(addr, val)
+    return PROGRAM_MEMORY:write_u8(addr, val)
   elseif size == WORD then
-    return PROGRAM_MEMORY:writev_u16(addr, val)
+    return PROGRAM_MEMORY:write_u16(addr, val)
   elseif size == DWORD then
-    return PROGRAM_MEMORY:writev_u32(addr, val)
+    return PROGRAM_MEMORY:write_u32(addr, val)
   elseif size == QWORD then
-    return PROGRAM_MEMORY:writev_u64(addr, val)
+    return PROGRAM_MEMORY:write_u64(addr, val)
   end
 end
 
 local function write_i(addr, size, val)
   if size == BYTE then
-    return PROGRAM_MEMORY:writev_i8(addr, val)
+    return PROGRAM_MEMORY:write_i8(addr, val)
   elseif size == WORD then
-    return PROGRAM_MEMORY:writev_i16(addr, val)
+    return PROGRAM_MEMORY:write_i16(addr, val)
   elseif size == DWORD then
-    return PROGRAM_MEMORY:writev_i32(addr, val)
+    return PROGRAM_MEMORY:write_i32(addr, val)
   elseif size == QWORD then
-    return PROGRAM_MEMORY:writev_i64(addr, val)
+    return PROGRAM_MEMORY:write_i64(addr, val)
   end
 end
 
@@ -82,35 +82,35 @@ local rqi = function(addr)
 end
 
 local wbu = function(addr, val)
-  PROGRAM_MEMORY:writev_u8(addr, val)
+  PROGRAM_MEMORY:write_u8(addr, val)
 end
 
 local wwu = function(addr, val)
-  PROGRAM_MEMORY:writev_u16(addr, val)
+  PROGRAM_MEMORY:write_u16(addr, val)
 end
 
 local wdu = function(addr, val)
-  PROGRAM_MEMORY:writev_u32(addr, val)
+  PROGRAM_MEMORY:write_u32(addr, val)
 end
 
 local wqu = function(addr, val)
-  PROGRAM_MEMORY:writev_u64(addr, val)
+  PROGRAM_MEMORY:write_u64(addr, val)
 end
 
 local wbi = function(addr, val)
-  PROGRAM_MEMORY:writev_i8(addr, val)
+  PROGRAM_MEMORY:write_i8(addr, val)
 end
 
 local wwi = function(addr, val)
-  PROGRAM_MEMORY:writev_i16(addr, val)
+  PROGRAM_MEMORY:write_i16(addr, val)
 end
 
 local wdi = function(addr, val)
-  PROGRAM_MEMORY:writev_i32(addr, val)
+  PROGRAM_MEMORY:write_i32(addr, val)
 end
 
 local wqi = function(addr, val)
-  PROGRAM_MEMORY:writev_i64(addr, val)
+  PROGRAM_MEMORY:write_i64(addr, val)
 end
 
 return {
