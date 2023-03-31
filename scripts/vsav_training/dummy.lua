@@ -1,5 +1,5 @@
-local mem_map = require './scripts/vsav_trainer/constants/memroy-map'
-local m = require './scripts/vsav_trainer/utils/memory-util'
+local mem_map = require './scripts/vsav_training/constants/memory-map'
+local m = require './scripts/vsav_training/utils/memory-util'
 
 local dummy_base_addr = m.player_battle_data.p2_base_addr
 
