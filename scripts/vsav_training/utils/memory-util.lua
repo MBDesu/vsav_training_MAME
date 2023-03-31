@@ -25,6 +25,30 @@ local function read_i(addr, size)
   end
 end
 
+local function write_u(addr, size, val)
+  if size == BYTE then
+    return PROGRAM_MEMORY:writev_u8(addr, val)
+  elseif size == WORD then
+    return PROGRAM_MEMORY:writev_u16(addr, val)
+  elseif size == DWORD then
+    return PROGRAM_MEMORY:writev_u32(addr, val)
+  elseif size == QWORD then
+    return PROGRAM_MEMORY:writev_u64(addr, val)
+  end
+end
+
+local function write_i(addr, size, val)
+  if size == BYTE then
+    return PROGRAM_MEMORY:writev_i8(addr, val)
+  elseif size == WORD then
+    return PROGRAM_MEMORY:writev_i16(addr, val)
+  elseif size == DWORD then
+    return PROGRAM_MEMORY:writev_i32(addr, val)
+  elseif size == QWORD then
+    return PROGRAM_MEMORY:writev_i64(addr, val)
+  end
+end
+
 local rbu = function(addr)
   return PROGRAM_MEMORY:read_u8(addr)
 end
@@ -57,9 +81,43 @@ local rqi = function(addr)
   return PROGRAM_MEMORY:read_i64(addr)
 end
 
+local wbu = function(addr, val)
+  PROGRAM_MEMORY:writev_u8(addr, val)
+end
+
+local wwu = function(addr, val)
+  PROGRAM_MEMORY:writev_u16(addr, val)
+end
+
+local wdu = function(addr, val)
+  PROGRAM_MEMORY:writev_u32(addr, val)
+end
+
+local wqu = function(addr, val)
+  PROGRAM_MEMORY:writev_u64(addr, val)
+end
+
+local wbi = function(addr, val)
+  PROGRAM_MEMORY:writev_i8(addr, val)
+end
+
+local wwi = function(addr, val)
+  PROGRAM_MEMORY:writev_i16(addr, val)
+end
+
+local wdi = function(addr, val)
+  PROGRAM_MEMORY:writev_i32(addr, val)
+end
+
+local wqi = function(addr, val)
+  PROGRAM_MEMORY:writev_i64(addr, val)
+end
+
 return {
   ['ru'] = read_u,
   ['ri'] = read_i,
+  ['wu'] = write_u,
+  ['wi'] = write_i,
   ['rbu'] = rbu,
   ['rwu'] = rwu,
   ['rdu'] = rdu,
@@ -68,5 +126,13 @@ return {
   ['rwi'] = rwi,
   ['rdi'] = rdi,
   ['rqi'] = rqi,
+  ['wbu'] = wbu,
+  ['wwu'] = wwu,
+  ['wdu'] = wdu,
+  ['wqu'] = wqu,
+  ['wbi'] = wbi,
+  ['wwi'] = wwi,
+  ['wdi'] = wdi,
+  ['wqi'] = wqi,
   ['mem'] = PROGRAM_MEMORY
 }

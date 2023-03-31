@@ -27,6 +27,18 @@ local player_battle_data = {
     offset = 0x06,
     size = BYTE
   },
+  flip_x = {
+    offset = 0x0B,
+    size = BYTE
+  },
+  red_health = {
+    offset = 0x50,
+    size = WORD
+  },
+  white_health = {
+    offset = 0x52,
+    size = WORD
+  },
   head_hurtbox_ptr = {
     offset = 0x80,
     size = DWORD

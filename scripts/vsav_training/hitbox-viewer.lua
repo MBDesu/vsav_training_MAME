@@ -2,8 +2,8 @@
 -- Heavily modified by N-Bee and MBD
 local mem_map = require './scripts/vsav_training/constants/memory-map'
 local m68k = require './scripts/vsav_training/constants/m68k'
-local m = require './scripts/vsav_training/memory-util'
-local cpu = require './scripts/vsav_training/m68k-util'
+local m = require './scripts/vsav_training/utils/memory-util'
+local cpu = require './scripts/vsav_training/utils/m68k-util'
 local gui = manager.machine.screens[':screen']
 local system = manager.machine.system
 
