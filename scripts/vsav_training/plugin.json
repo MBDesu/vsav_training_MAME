@@ -1,0 +1,10 @@
+{
+  "plugin": {
+    "name": "Vsav Training Mode",
+    "description": "A training mode for Vsav on MAME",
+    "version": "0.0.1",
+    "author": "MBDesu",
+    "type": "plugin",
+    "start": "true"
+  }
+}

@@ -43,7 +43,7 @@ local profile = {
       projectiles = 32
     },
     address = {
-      player = mem_map.player_battle_data.p1_base_addr,
+      player = mem_map.player_data.p1_base_addr,
       projectile = mem_map.projectile_data.projectiles_base_addr,
       screen_left = mem_map.global_settings.base_addr + mem_map.global_settings.screen_left.offset
     },
@@ -55,42 +55,42 @@ local profile = {
     box_list = {
       {
         anim_ptr = nil,
-        addr_table_ptr = mem_map.player_battle_data.push_box_ptr.offset,
-        id_ptr = mem_map.player_battle_data.push_box_id.offset,
+        addr_table_ptr = mem_map.player_data.push_box_ptr.offset,
+        id_ptr = mem_map.player_data.push_box_id.offset,
         id_shift = 0x3,
         type = 'push'
       },
       {
         anim_ptr = nil,
-        addr_table_ptr = mem_map.player_battle_data.head_hurtbox_ptr.offset,
-        id_ptr = mem_map.player_battle_data.head_hurtbox_id.offset,
+        addr_table_ptr = mem_map.player_data.head_hurtbox_ptr.offset,
+        id_ptr = mem_map.player_data.head_hurtbox_id.offset,
         id_shift = 0x3,
         type = 'vulnerability'
       },
       {
         anim_ptr = nil,
-        addr_table_ptr = mem_map.player_battle_data.body_hurtbox_ptr.offset,
-        id_ptr = mem_map.player_battle_data.body_hurtbox_id.offset,
+        addr_table_ptr = mem_map.player_data.body_hurtbox_ptr.offset,
+        id_ptr = mem_map.player_data.body_hurtbox_id.offset,
         id_shift = 0x3,
         type = 'vulnerability'
       },
       {
         anim_ptr = nil,
-        addr_table_ptr = mem_map.player_battle_data.foot_hurtbox_ptr.offset,
-        id_ptr = mem_map.player_battle_data.foot_hurtbox_id.offset,
+        addr_table_ptr = mem_map.player_data.foot_hurtbox_ptr.offset,
+        id_ptr = mem_map.player_data.foot_hurtbox_id.offset,
         id_shift = 0x3,
         type = 'vulnerability'
       },
       {
         anim_ptr = nil,
-        addr_table_ptr = mem_map.player_battle_data.push_box_ptr.offset,
-        id_ptr = mem_map.player_battle_data.push_box_id.offset,
+        addr_table_ptr = mem_map.player_data.push_box_ptr.offset,
+        id_ptr = mem_map.player_data.push_box_id.offset,
         id_shift = 0x3,
         type = 'throwable'
       },
       {
-        anim_ptr = mem_map.player_battle_data.animation_ptr.offset,
-        addr_table_ptr = mem_map.player_battle_data.attack_box_ptr.offset,
+        anim_ptr = mem_map.player_data.animation_ptr.offset,
+        addr_table_ptr = mem_map.player_data.attack_box_ptr.offset,
         id_ptr = 0x0A, -- TODO: figure out what this is
         id_shift = 0x5,
         type = 'attack'
@@ -108,7 +108,7 @@ local profile = {
           insert_throw({
             id = cpu.get_reg(m68k.reg.D0) & 0xFF,
             -- TODO: what's `0x98`?
-            anim_ptr = nil, addr_table_ptr = mem_map.player_battle_data.attack_box_ptr.offset, id_ptr = 0x98, id_shift = 0x5, type = 'throw'
+            anim_ptr = nil, addr_table_ptr = mem_map.player_data.attack_box_ptr.offset, id_ptr = 0x98, id_shift = 0x5, type = 'throw'
           })
         end
       },
@@ -136,7 +136,7 @@ local profile = {
             id = m68k.reg.D0 & 0xFF,
             pos_x = get_x(m.rwi(base + game.offset.pos_x)),
             pos_y = get_y(m.rwi(base + game.offset.pos_y)),
-            anim_ptr = nil, addr_table_ptr = mem_map.player_battle_data.attack_box_ptr.offset, id_ptr = 0x98, id_shift = 0x5, type = 'throw'
+            anim_ptr = nil, addr_table_ptr = mem_map.player_data.attack_box_ptr.offset, id_ptr = 0x98, id_shift = 0x5, type = 'throw'
           })
         end
       },
@@ -349,7 +349,7 @@ local read_projectiles = function(f)
 end
 
 local update_hitboxes = function()
-  if not game then
+  if not game or not SETTINGS.TRAINING_OPTIONS.show_hitboxes then
     return
   end
   local screen_left_ptr = game.address.screen_left or game.get_cam_ptr()
@@ -429,7 +429,7 @@ local render_hitboxes = function()
   local hurtboxes = {}
 
   local f = frame_buffer[1]
-  if not f.match_active then
+  if not f.match_active or not SETTINGS.TRAINING_OPTIONS.show_hitboxes then
     return
   end
 

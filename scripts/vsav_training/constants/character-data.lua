@@ -1,24 +1,32 @@
 local character_id = {
-  BU = 0x00,
-  DE = 0x01,
-  GA = 0x02,
-  VI = 0x03,
-  ZA = 0x04,
-  MO = 0x05,
-  AN = 0x06,
-  FE = 0x07,
-  BI = 0x08,
-  AU = 0x09,
-  SA = 0x0A,
-  RD = 0x0B,
-  QB = 0x0C,
-  LE = 0x0D,
-  LI = 0x0E,
-  JE = 0x0F,
-  DG = 0x12,
-  OB = 0x18
+  Bulleta    = 0x00,
+  Demitri    = 0x01,
+  Gallon     = 0x02,
+  Victor     = 0x03,
+  Zabel      = 0x04,
+  Morrigan   = 0x05,
+  Anakaris   = 0x06,
+  Felicia    = 0x07,
+  Bishamon   = 0x08,
+  Aulbath    = 0x09,
+  Sasquatch  = 0x0A,
+  Random     = 0x0B,
+  QBee       = 0x0C,
+  LeiLei     = 0x0D,
+  Lilith     = 0x0E,
+  Jedah      = 0x0F,
+  DarkGallon = 0x12,
+  Oboro      = 0x18
 }
 
+local id_character_map = {}
+do
+  for k, v in pairs(character_id) do
+    id_character_map[v] = k
+  end
+end
+
 return {
-  ['CHARACTER_ID'] = character_id
+  ['CHARACTER_ID'] = character_id,
+  ['ID_CHARACTER_MAP'] = id_character_map
 }

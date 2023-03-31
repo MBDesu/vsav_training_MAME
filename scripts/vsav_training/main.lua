@@ -1,17 +1,20 @@
 require './scripts/vsav_training/settings'
 require './scripts/vsav_training/menu'
 require './scripts/vsav_training/utils/lua-util'
+local game_state = require './scripts/vsav_training/game-state'
 local dummy = require './scripts/vsav_training/dummy'
 local hitboxViewer = require './scripts/vsav_training/hitbox-viewer'
 
 hitboxViewer.start()
-emu.register_start(function()
-
-end)
+-- emu.register_start(function() end)
 emu.register_frame(function()
-  hitboxViewer.registerFrame()
+  if game_state.match_has_begun() then
+    hitboxViewer.registerFrame()
+  end
 end)
 emu.register_frame_done(function()
-  dummy.registerFrameDone()
-  hitboxViewer.registerFrameDone()
+  if game_state.match_has_begun() then
+    dummy.registerFrameDone()
+    hitboxViewer.registerFrameDone()
+  end
 end)

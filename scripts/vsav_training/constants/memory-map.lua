@@ -6,6 +6,10 @@ local global_settings = {
     offset = 0x60,
     size = DWORD
   },
+  current_stage = {
+    offset = 0x100,
+    size = WORD
+  },
   game_speed = {
     offset = 0x116,
     size = BYTE
@@ -16,9 +20,13 @@ local global_settings = {
   }
 }
 
-local player_battle_data = {
+local player_data = {
   p1_base_addr = 0xFF8400,
   p2_base_addr = 0xFF8800,
+  char_sel_cursor_pos = {
+    offset = 0x03,
+    size = BYTE
+  },
   status_1 = {
     offset = 0x05,
     size = BYTE
@@ -87,6 +95,6 @@ local projectile_data = {
 
 return {
   ['global_settings'] = global_settings,
-  ['player_battle_data'] = player_battle_data,
+  ['player_data'] = player_data,
   ['projectile_data'] = projectile_data,
 }
