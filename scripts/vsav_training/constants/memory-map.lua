@@ -14,6 +14,10 @@ local global_settings = {
     offset = 0x100,
     size = WORD
   },
+  game_clock = {
+    offset = 0x109,
+    size = BYTE
+  },
   game_speed = {
     offset = 0x116,
     size = BYTE

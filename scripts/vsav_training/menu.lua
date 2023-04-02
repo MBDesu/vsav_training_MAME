@@ -11,7 +11,6 @@ local function toggle_set_enabled(menu_item, state)
     menu_item.display_value = menu_item.display_value_on
     menu_item.nav_label = menu_item.nav_label_on
   end
-  -- print('toggled', menu_item.name, tostring(menu_item.is_enabled))
   if menu_item.config_obj then
     menu_item.config_obj.object[menu_item.config_obj.property_name] = not menu_item.config_obj.object[menu_item.config_obj.property_name]
   end
@@ -21,7 +20,6 @@ end
 local function set_integer_value(menu_item, state)
   local function set_integer_nav_label()
     if menu_item.is_entering_text then
-      -- print('setting blank nav label')
       menu_item.nav_label = ''
     elseif state >= menu_item.max_value then
       menu_item.nav_label = 'l'
@@ -47,7 +45,6 @@ local function set_integer_value(menu_item, state)
       menu_item.config_obj.object[menu_item.config_obj.property_name] = menu_item.display_value
     end
   end
-  -- print('set value to', menu_item.display_value)
   return true, true
 end
 
@@ -161,15 +158,12 @@ local function handle_integer_menu_item_change(menu_item, event)
   elseif event == 'right' and not menu_item.is_entering_text then
     change = menu_item.display_value + 1
   elseif did_select_menu_item and not menu_item.is_entering_text then
-    -- print('was not entering text; now is')
     menu_item.is_entering_text = true
   elseif did_finish_entering_text then
-    -- print('was entering text; now is not')
     menu_item.display_value = math.min(menu_item.max_value, math.max(menu_item.min_value, menu_item.display_value))
     menu_item.is_entering_text = false
   elseif did_enter_number then
     change = (tonumber(menu_item.display_value) * 10) + ASCII_KEYCODE_TO_INT(tonumber(event))
-    -- print('entering text change', change, tonumber(menu_item.display_value), ASCII_KEYCODE_TO_INT(tonumber(event)))
   elseif did_backspace then
     if menu_item.display_value then
       if tonumber(menu_item.display_value) < 10 then
@@ -178,10 +172,8 @@ local function handle_integer_menu_item_change(menu_item, event)
         change = math.floor(tonumber(menu_item.display_value) / 10)
       end
     end
-    -- print('entering text change', change, tonumber(menu_item.display_value))
   end
   if change == 0 then change = menu_item.display_value end
-  -- print('returning change = ', change)
   return change
 end
 
@@ -221,9 +213,11 @@ local dummy_settings_menu = {
   create_default_all_item(),
 }
 local training_options_menu = {
-  create_toggle_menu_item('Training Options', '', '', 'heading', 'heading', nil, nil, false),
-  -- create_toggle_menu_item('Infinite Time', 'On', 'Off', 'r', 'l', SETTINGS.TRAINING_OPTIONS, 'infinite_time', true),
+  create_heading_item('Training Options'),
+  create_toggle_menu_item('Infinite Time', 'On', 'Off', 'r', 'l', SETTINGS.TRAINING_OPTIONS, 'infinite_time', true),
   create_toggle_menu_item('Show Hitboxes', 'Yes', 'No', 'r', 'l', SETTINGS.TRAINING_OPTIONS, 'show_hitboxes', true),
+  create_separator_item(),
+  create_default_all_item(),
 }
 
 local function populate_dummy_menu()
@@ -249,8 +243,9 @@ local function populate_training_options()
 end
 
 local function training_options_menu_callback(index, event)
-  local menu_item = training_options_menu[index]
-  return handle_menu_change(menu_item, event)
+  local menu = training_options_menu
+  local menu_item = menu[index]
+  return handle_menu_change(menu, menu_item, event)
 end
 
 -- local function game_settings_menu_callback(index, event)
