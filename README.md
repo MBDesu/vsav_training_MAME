@@ -9,3 +9,6 @@ A training mode for vsavj on MAME.
   2. Copy the `scripts/` folder to the same place from step 1
 
   3. Run `run_vsav_training.bat`
+
+## Use
+Press whatever key you use to bring up the MAME in-system menu and navigate to `Plugin Options`. Here you will find myriad settings.
