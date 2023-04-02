@@ -6,6 +6,10 @@ local global_settings = {
     offset = 0x60,
     size = DWORD
   },
+  drawn_frame_counter = {
+    offset = 0xB4,
+    size = BYTE
+  },
   current_stage = {
     offset = 0x100,
     size = WORD
