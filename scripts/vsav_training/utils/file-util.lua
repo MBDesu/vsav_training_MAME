@@ -1,4 +1,4 @@
-local json = require './scripts/vsav_training/utils/dkjson'
+local json = require './scripts/vsav_training/dependencies/dkjson'
 
 local function parse_json_file_to_object(file_path)
   local file = io.open(file_path, 'r')
@@ -27,14 +27,18 @@ local function parse_object_to_json_file(object, file_path)
 end
 
 local function parse_training_settings()
+  -- TODO: error handling to default to settings.lua values if fails
   TRAINING_SETTINGS = parse_json_file_to_object(SCRIPT_SETTINGS.training_settings_file)
 end
 
 local function save_training_settings()
+  -- TODO: error handling
   parse_object_to_json_file(TRAINING_SETTINGS, SCRIPT_SETTINGS.training_settings_file)
 end
 
 return {
   ['parse_training_settings'] = parse_training_settings,
-  ['save_training_settings'] = parse_object_to_json_file
+  ['save_training_settings'] = save_training_settings,
+  ['parse_object_to_json_file'] = parse_object_to_json_file,
+  ['parse_json_file_to_object'] = parse_json_file_to_object
 }

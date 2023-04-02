@@ -13,25 +13,24 @@ function DEEP_COPY(original)
   return copy
 end
 
-local function write_n_spaces_m_times(n, m)
-  for i = 0, m do
-    for j = 0, n do
-      io.write(' ')
+local function print_n_spaces(n)
+  local spaces = ''
+  if n > 0 then
+    for i = 0, n do
+      spaces = spaces .. ' '
     end
   end
+  io.write(spaces)
 end
 
 -- this thing sucks, but it does what I need it to
 function PRINT_TABLE(table, depth)
   depth = depth or 0
-  if depth > 0 then
-    write_n_spaces_m_times(2, depth)
-  end
+  print()
+  print_n_spaces(2 * depth)
   print('{')
   for k, v in pairs(table) do
-    if depth > 0 then
-      write_n_spaces_m_times(2, depth)
-    end
+    print_n_spaces(2 * (depth + 1))
     io.write(tostring(k) .. ': ')
     if type(v) == 'table' then
       PRINT_TABLE(v, depth + 1)
@@ -39,9 +38,7 @@ function PRINT_TABLE(table, depth)
       print(tostring(v))
     end
   end
-  if depth > 0 then
-    write_n_spaces_m_times(2, depth)
-  end
+  print_n_spaces(2 * depth)
   print('}')
 end
 

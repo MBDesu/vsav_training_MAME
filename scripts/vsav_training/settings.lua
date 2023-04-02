@@ -12,11 +12,15 @@ TRAINING_SETTINGS = {
   TRAINING_OPTIONS = {
     show_hitboxes = true,
     infinite_time = true,
+  },
+  GAME_SETTINGS = {
+    game_speed = 3,
   }
 }
 
 SCRIPT_SETTINGS = {
-  training_settings_file = './scripts/vsav_training/training_settings.json'
+  training_settings_file = './scripts/vsav_training/training_settings.json',
+  hotkeys_settings_file = './scripts/vsav_training/hotkeys.json'
 }
 
 return {

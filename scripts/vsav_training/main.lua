@@ -4,6 +4,7 @@ require './scripts/vsav_training/settings'
 
 local file_util = require './scripts/vsav_training/utils/file-util'
 file_util.parse_training_settings()
+
 require './scripts/vsav_training/menu'
 
 local game_state = require './scripts/vsav_training/game-state'

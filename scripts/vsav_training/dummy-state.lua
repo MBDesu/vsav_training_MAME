@@ -1,7 +1,6 @@
 local mem_map = require './scripts/vsav_training/constants/memory-map'
 local player_data = require './scripts/vsav_training/constants/player-data'
 local m = require './scripts/vsav_training/utils/memory-util'
-local game_state = require './scripts/vsav_training/game-state'
 
 local p1_base_addr = mem_map.player_data.p1_base_addr
 local p2_base_addr = mem_map.player_data.p2_base_addr
@@ -68,13 +67,26 @@ local function update_player_meter()
   end
 end
 
-local function update_player_parameters()
-  if game_state.match_has_begun() then
-    update_player_health()
-    update_player_meter()
+local function disable_taunts()
+  m.wbu(mem_map.player_data.p1_base_addr + mem_map.player_data.remaining_taunts.offset, 0x0)
+  m.wbu(mem_map.player_data.p2_base_addr + mem_map.player_data.remaining_taunts.offset, 0x0)
+end
+
+local function reset_dummy_state()
+  for i = 1, 2 do
+    player_state[i].is_hurt = false
+    player_state[i].was_hurt = false
+    player_state[i].last_hurt = 0
   end
 end
 
+local function update_player_parameters()
+  update_player_health()
+  update_player_meter()
+  disable_taunts()
+end
+
 return {
+  ['reset_dummy_state'] = reset_dummy_state,
   ['registerFrameDone'] = update_player_parameters
 }

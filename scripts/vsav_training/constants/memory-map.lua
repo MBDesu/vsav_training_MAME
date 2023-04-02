@@ -6,6 +6,10 @@ local global_settings = {
     offset = 0x60,
     size = DWORD
   },
+  game_speed_menu_setting = {
+    offset = 0xA3,
+    size = BYTE
+  },
   drawn_frame_counter = {
     offset = 0xB4,
     size = BYTE
@@ -102,6 +106,10 @@ local player_data = {
   meter_value = {
     offset = 0x10A,
     size = WORD
+  },
+  remaining_taunts = {
+    offset = 0x179,
+    size = BYTE
   }
 }
 
