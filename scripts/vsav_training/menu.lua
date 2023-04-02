@@ -416,7 +416,7 @@ local function populate_extra_functions()
   if hotkey_menu then
     local input = manager.machine.input
     menu[1] = { 'Select item to hotkey', '', 'off' }
-    menu[2] = { string.format('Press %s to default', manager.ui:get_general_input_setting(manager.machine.ioport:token_to_input_type('UI_CLEAR'))), '', 'off' }
+    menu[2] = { string.format('Press %s to clear', manager.ui:get_general_input_setting(manager.machine.ioport:token_to_input_type('UI_CLEAR'))), '', 'off' }
     menu[3] = { '---', '', 'off' }
     hotkey_list = {}
     local function hotkey_callback(menu_item, event)
