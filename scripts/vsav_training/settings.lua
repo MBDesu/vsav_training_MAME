@@ -1,4 +1,4 @@
-SETTINGS = {
+TRAINING_SETTINGS = {
   DUMMY_SETTINGS = {
     p1_infinite_health = true,
     p1_infinite_meter = true,
@@ -13,4 +13,12 @@ SETTINGS = {
     show_hitboxes = true,
     infinite_time = true,
   }
+}
+
+SCRIPT_SETTINGS = {
+  training_settings_file = './scripts/vsav_training/training_settings.json'
+}
+
+return {
+  TRAINING_SETTINGS
 }

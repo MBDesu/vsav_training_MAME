@@ -349,7 +349,7 @@ local read_projectiles = function(f)
 end
 
 local update_hitboxes = function()
-  if not game or not SETTINGS.TRAINING_OPTIONS.show_hitboxes then
+  if not game or not TRAINING_SETTINGS.TRAINING_OPTIONS.show_hitboxes then
     return
   end
   local screen_left_ptr = game.address.screen_left or game.get_cam_ptr()
@@ -429,7 +429,7 @@ local render_hitboxes = function()
   local hurtboxes = {}
 
   local f = frame_buffer[1]
-  if not f.match_active or not SETTINGS.TRAINING_OPTIONS.show_hitboxes then
+  if not f.match_active or not TRAINING_SETTINGS.TRAINING_OPTIONS.show_hitboxes then
     return
   end
 

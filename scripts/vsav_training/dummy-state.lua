@@ -45,25 +45,25 @@ end
 local function update_player_health()
   update_hurt_timer(1, p1_base_addr)
   update_hurt_timer(2, p2_base_addr)
-  if SETTINGS.DUMMY_SETTINGS.p1_infinite_health then
+  if TRAINING_SETTINGS.DUMMY_SETTINGS.p1_infinite_health then
     set_player_health(p1_base_addr, 0x120)
-  elseif player_state[1].last_hurt > 0 and (SETTINGS.DUMMY_SETTINGS.p1_delay_to_refill * 60) + player_state[1].last_hurt <= manager.machine.screens[':screen']:frame_number() then
-    set_player_health(p1_base_addr, SETTINGS.DUMMY_SETTINGS.p1_max_health)
+  elseif player_state[1].last_hurt > 0 and (TRAINING_SETTINGS.DUMMY_SETTINGS.p1_delay_to_refill * 60) + player_state[1].last_hurt <= manager.machine.screens[':screen']:frame_number() then
+    set_player_health(p1_base_addr, TRAINING_SETTINGS.DUMMY_SETTINGS.p1_max_health)
     player_state[1].last_hurt = 0
   end
-  if SETTINGS.DUMMY_SETTINGS.p2_infinite_health then
+  if TRAINING_SETTINGS.DUMMY_SETTINGS.p2_infinite_health then
     set_player_health(p2_base_addr, 0x120)
-  elseif player_state[2].last_hurt > 0 and (SETTINGS.DUMMY_SETTINGS.p2_delay_to_refill * 60) + player_state[2].last_hurt <= manager.machine.screens[':screen']:frame_number() then
-    set_player_health(p2_base_addr, SETTINGS.DUMMY_SETTINGS.p2_max_health)
+  elseif player_state[2].last_hurt > 0 and (TRAINING_SETTINGS.DUMMY_SETTINGS.p2_delay_to_refill * 60) + player_state[2].last_hurt <= manager.machine.screens[':screen']:frame_number() then
+    set_player_health(p2_base_addr, TRAINING_SETTINGS.DUMMY_SETTINGS.p2_max_health)
     player_state[2].last_hurt = 0
   end
 end
 
 local function update_player_meter()
-  if SETTINGS.DUMMY_SETTINGS.p1_infinite_meter then
+  if TRAINING_SETTINGS.DUMMY_SETTINGS.p1_infinite_meter then
     set_player_meter(p1_base_addr)
   end
-  if SETTINGS.DUMMY_SETTINGS.p2_infinite_meter then
+  if TRAINING_SETTINGS.DUMMY_SETTINGS.p2_infinite_meter then
     set_player_meter(p2_base_addr)
   end
 end

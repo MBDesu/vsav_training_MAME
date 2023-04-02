@@ -12,7 +12,7 @@ end
 
 local function update_game_state_parameters()
   if match_has_begun() then
-    if SETTINGS.TRAINING_OPTIONS.infinite_time then
+    if TRAINING_SETTINGS.TRAINING_OPTIONS.infinite_time then
       set_time()
     end
   end

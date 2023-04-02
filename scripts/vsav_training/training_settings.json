@@ -1,0 +1,16 @@
+{
+  "TRAINING_OPTIONS":{
+    "infinite_time":true,
+    "show_hitboxes":true
+  },
+  "DUMMY_SETTINGS":{
+    "p1_infinite_meter":true,
+    "p2_infinite_meter":true,
+    "p2_infinite_health":true,
+    "p2_delay_to_refill":0,
+    "p1_infinite_health":true,
+    "p2_max_health":288,
+    "p1_max_health":288,
+    "p1_delay_to_refill":0
+  }
+}

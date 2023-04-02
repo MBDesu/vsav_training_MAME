@@ -1,3 +1,5 @@
+local file_util = require './scripts/vsav_training/utils/file-util'
+
 local function toggle_set_enabled(menu_item, state)
   if menu_item.is_enabled == state then
     return state, false
@@ -14,6 +16,7 @@ local function toggle_set_enabled(menu_item, state)
   if menu_item.config_obj then
     menu_item.config_obj.object[menu_item.config_obj.property_name] = not menu_item.config_obj.object[menu_item.config_obj.property_name]
   end
+  file_util.save_training_settings()
   return true, true
 end
 
@@ -45,6 +48,7 @@ local function set_integer_value(menu_item, state)
       menu_item.config_obj.object[menu_item.config_obj.property_name] = menu_item.display_value
     end
   end
+  file_util.save_training_settings()
   return true, true
 end
 
@@ -202,22 +206,22 @@ end
 
 local dummy_settings_menu = {
   create_heading_item('Dummy Options'),
-  create_toggle_menu_item('P1 Infinite Health', 'On', 'Off', 'r', 'l', SETTINGS.DUMMY_SETTINGS, 'p1_infinite_health', true),
-  create_toggle_menu_item('P1 Infinite Meter', 'On', 'Off', 'r', 'l', SETTINGS.DUMMY_SETTINGS, 'p1_infinite_meter', true),
-  create_integer_menu_item('P1 Max Health', 1, 288, SETTINGS.DUMMY_SETTINGS, 'p1_max_health', 288),
-  create_integer_menu_item('P1 Refill Health Delay (seconds)', 0, 60, SETTINGS.DUMMY_SETTINGS, 'p1_delay_to_refill', 0),
+  create_toggle_menu_item('P1 Infinite Health', 'On', 'Off', 'r', 'l', TRAINING_SETTINGS.DUMMY_SETTINGS, 'p1_infinite_health', true),
+  create_toggle_menu_item('P1 Infinite Meter', 'On', 'Off', 'r', 'l', TRAINING_SETTINGS.DUMMY_SETTINGS, 'p1_infinite_meter', true),
+  create_integer_menu_item('P1 Max Health', 1, 288, TRAINING_SETTINGS.DUMMY_SETTINGS, 'p1_max_health', 288),
+  create_integer_menu_item('P1 Refill Health Delay (seconds)', 0, 60, TRAINING_SETTINGS.DUMMY_SETTINGS, 'p1_delay_to_refill', 0),
   create_separator_item(),
-  create_toggle_menu_item('P2 Infinite Health', 'On', 'Off', 'r', 'l', SETTINGS.DUMMY_SETTINGS, 'p2_infinite_health', true),
-  create_toggle_menu_item('P2 Infinite Meter', 'On', 'Off', 'r', 'l', SETTINGS.DUMMY_SETTINGS, 'p2_infinite_meter', true),
-  create_integer_menu_item('P2 Max Health', 1, 288, SETTINGS.DUMMY_SETTINGS, 'p2_max_health', 288),
-  create_integer_menu_item('P2 Refill Health Delay (seconds)', 0, 60, SETTINGS.DUMMY_SETTINGS, 'p2_delay_to_refill', 0),
+  create_toggle_menu_item('P2 Infinite Health', 'On', 'Off', 'r', 'l', TRAINING_SETTINGS.DUMMY_SETTINGS, 'p2_infinite_health', true),
+  create_toggle_menu_item('P2 Infinite Meter', 'On', 'Off', 'r', 'l', TRAINING_SETTINGS.DUMMY_SETTINGS, 'p2_infinite_meter', true),
+  create_integer_menu_item('P2 Max Health', 1, 288, TRAINING_SETTINGS.DUMMY_SETTINGS, 'p2_max_health', 288),
+  create_integer_menu_item('P2 Refill Health Delay (seconds)', 0, 60, TRAINING_SETTINGS.DUMMY_SETTINGS, 'p2_delay_to_refill', 0),
   create_separator_item(),
   create_default_all_item(),
 }
 local training_options_menu = {
   create_heading_item('Training Options'),
-  create_toggle_menu_item('Infinite Time', 'On', 'Off', 'r', 'l', SETTINGS.TRAINING_OPTIONS, 'infinite_time', true),
-  create_toggle_menu_item('Show Hitboxes', 'Yes', 'No', 'r', 'l', SETTINGS.TRAINING_OPTIONS, 'show_hitboxes', true),
+  create_toggle_menu_item('Infinite Time', 'On', 'Off', 'r', 'l', TRAINING_SETTINGS.TRAINING_OPTIONS, 'infinite_time', true),
+  create_toggle_menu_item('Show Hitboxes', 'Yes', 'No', 'r', 'l', TRAINING_SETTINGS.TRAINING_OPTIONS, 'show_hitboxes', true),
   create_separator_item(),
   create_default_all_item(),
 }
@@ -227,7 +231,7 @@ local function populate_dummy_menu()
   for _, item in pairs(dummy_settings_menu) do
     menu[#menu + 1] = { item.name, item.display_value, item.nav_label }
   end
-  return menu, nil, 'lrrepeat'
+  return menu, 'lrrepeat'
 end
 
 local function dummy_menu_callback(index, event)
