@@ -24,6 +24,10 @@ local function set_player_health(player_base_addr, value)
   m.wwu(player_base_addr + mem_map.player_data.white_health.offset, value)
 end
 
+local function set_player_meter(player_base_addr, value)
+  m.wbu(player_base_addr + mem_map.player_data.meter_stock.offset, value or 0x63)
+end
+
 local function update_hurt_timer(player_num, player_base_addr)
   local player_status = player_state[player_num]
   local status = m.rbu(player_base_addr + mem_map.player_data.status_1.offset)
@@ -55,9 +59,19 @@ local function update_player_health()
   end
 end
 
+local function update_player_meter()
+  if SETTINGS.DUMMY_SETTINGS.p1_infinite_meter then
+    set_player_meter(p1_base_addr)
+  end
+  if SETTINGS.DUMMY_SETTINGS.p2_infinite_meter then
+    set_player_meter(p2_base_addr)
+  end
+end
+
 local function update_player_parameters()
   if game_state.match_has_begun() then
     update_player_health()
+    update_player_meter()
   end
 end
 

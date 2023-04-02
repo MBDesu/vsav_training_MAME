@@ -94,6 +94,14 @@ local player_data = {
   animation_ptr = {
     offset = 0x1C,
     size = DWORD
+  },
+  meter_stock = {
+    offset = 0x109,
+    size = BYTE
+  },
+  meter_value = {
+    offset = 0x10A,
+    size = WORD
   }
 }
 

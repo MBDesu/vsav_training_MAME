@@ -203,10 +203,12 @@ end
 local dummy_settings_menu = {
   create_heading_item('Dummy Options'),
   create_toggle_menu_item('P1 Infinite Health', 'On', 'Off', 'r', 'l', SETTINGS.DUMMY_SETTINGS, 'p1_infinite_health', true),
+  create_toggle_menu_item('P1 Infinite Meter', 'On', 'Off', 'r', 'l', SETTINGS.DUMMY_SETTINGS, 'p1_infinite_meter', true),
   create_integer_menu_item('P1 Max Health', 1, 288, SETTINGS.DUMMY_SETTINGS, 'p1_max_health', 288),
   create_integer_menu_item('P1 Refill Health Delay (seconds)', 0, 60, SETTINGS.DUMMY_SETTINGS, 'p1_delay_to_refill', 0),
   create_separator_item(),
   create_toggle_menu_item('P2 Infinite Health', 'On', 'Off', 'r', 'l', SETTINGS.DUMMY_SETTINGS, 'p2_infinite_health', true),
+  create_toggle_menu_item('P2 Infinite Meter', 'On', 'Off', 'r', 'l', SETTINGS.DUMMY_SETTINGS, 'p2_infinite_meter', true),
   create_integer_menu_item('P2 Max Health', 1, 288, SETTINGS.DUMMY_SETTINGS, 'p2_max_health', 288),
   create_integer_menu_item('P2 Refill Health Delay (seconds)', 0, 60, SETTINGS.DUMMY_SETTINGS, 'p2_delay_to_refill', 0),
   create_separator_item(),
