@@ -11,4 +11,4 @@ A training mode for vsavj on MAME.
   3. Run `run_vsav_training.bat`
 
 ## Use
-Press whatever key you use to bring up the MAME in-system menu and navigate to `Plugin Options`. Here you will find myriad settings.
+Press whatever key you use to bring up the MAME in-system menu (`TAB` by default) and navigate to `Plugin Options`. Here you will find myriad settings.
