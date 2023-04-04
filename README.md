@@ -35,3 +35,4 @@ On character select, you may select a stage by pressing `COIN 1` on a character 
 | Lei-Lei   | Vanity Paradise         |
 | Lilith    | Deserted Chateau        |
 | Jedah     | Fetus of God            |
+| Random    | Random (default)        |
