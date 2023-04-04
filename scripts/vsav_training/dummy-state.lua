@@ -68,8 +68,10 @@ local function update_player_meter()
 end
 
 local function disable_taunts()
-  m.wbu(mem_map.player_data.p1_base_addr + mem_map.player_data.remaining_taunts.offset, 0x0)
-  m.wbu(mem_map.player_data.p2_base_addr + mem_map.player_data.remaining_taunts.offset, 0x0)
+  if TRAINING_SETTINGS.TRAINING_OPTIONS.disable_taunts then
+    m.wbu(mem_map.player_data.p1_base_addr + mem_map.player_data.remaining_taunts.offset, 0x0)
+    m.wbu(mem_map.player_data.p2_base_addr + mem_map.player_data.remaining_taunts.offset, 0x0)
+  end
 end
 
 local function reset_dummy_state()
@@ -88,5 +90,6 @@ end
 
 return {
   ['reset_dummy_state'] = reset_dummy_state,
+  -- dummy_state doesn't register its own frame done due to dependency on game_state
   ['registerFrameDone'] = update_player_parameters
 }

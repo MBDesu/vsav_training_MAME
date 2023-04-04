@@ -12,6 +12,7 @@ TRAINING_SETTINGS = {
   TRAINING_OPTIONS = {
     show_hitboxes = true,
     infinite_time = true,
+    disable_taunts = false,
   },
   GAME_SETTINGS = {
     game_speed = 3,

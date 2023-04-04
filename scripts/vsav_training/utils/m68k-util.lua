@@ -1,5 +1,7 @@
 local m68k = require './scripts/vsav_training/constants/m68k'
 local cpu = manager.machine.devices[':maincpu']
+local debug = cpu.debug
+local program_space = cpu.spaces['program']
 
 local get_reg = function(register)
   return cpu.state[register].value
@@ -36,6 +38,8 @@ end
 
 return {
   ['cpu'] = cpu,
+  ['debug'] = debug,
+  ['program_space'] = program_space,
   ['get_reg'] = get_reg,
   ['set_reg'] = set_reg,
   ['is_flag_set'] = is_flag_set,

@@ -1,5 +1,5 @@
 require './scripts/vsav_training/constants/data-types'
-local PROGRAM_MEMORY = manager.machine.devices[":maincpu"].spaces["program"]
+local PROGRAM_MEMORY = manager.machine.devices[':maincpu'].spaces['program']
 
 local function read_u(addr, size)
   if size == BYTE then

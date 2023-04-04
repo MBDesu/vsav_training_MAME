@@ -10,12 +10,27 @@ require './scripts/vsav_training/menu'
 local game_state = require './scripts/vsav_training/game-state'
 local dummy = require './scripts/vsav_training/dummy-state'
 local hitbox_viewer = require './scripts/vsav_training/hitbox-viewer'
--- imports and config end
+local stage_select = require './scripts/vsav_training/stage-select'
 
 hitbox_viewer.start()
+-- imports and config end
+
+-- scratchpad start
+-- for k, v in pairs(manager.machine.ioport.types) do
+--   print(k, v.name)
+--   print(k, v.type)
+--   print(k, v.group)
+--   print(k, v.player)
+--   print(k, v.token)
+--   print(k, v.name)
+--   print('===================')
+-- end
+-- scratchpad end
 emu.register_frame(function()
   if game_state.match_has_begun() then
     hitbox_viewer.registerFrame()
+  else
+    stage_select.select_stage()
   end
 end)
 emu.register_frame_done(function()

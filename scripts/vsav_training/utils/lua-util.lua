@@ -44,5 +44,24 @@ end
 
 function ASCII_KEYCODE_TO_INT(ascii_value)
   if ascii_value > 0x39 and ascii_value < 0x30 then return nil end
-  return ascii_value & 0x0F;
+end
+
+local function octal2Bin(octal_num)
+  local oct2bin = {
+    ['0'] = '000',
+    ['1'] = '001',
+    ['2'] = '010',
+    ['3'] = '011',
+    ['4'] = '100',
+    ['5'] = '101',
+    ['6'] = '110',
+    ['7'] = '111'
+  }
+  return oct2bin[octal_num]
+end
+
+function NUM_TO_BIN_STR(num)
+  local s = string.format('%o', num)
+  s = s:gsub('.', octal2Bin)
+  return s
 end

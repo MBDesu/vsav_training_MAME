@@ -43,8 +43,7 @@ local function get_stage_name(stage_value)
   end
 end
 
-local stagesModule = {
+return {
   ['get_stage_name'] = get_stage_name,
   ['STAGE_VALUES'] = STAGE_VALUES,
 }
-return stagesModule

@@ -11,7 +11,8 @@
   },
   "TRAINING_OPTIONS":{
     "infinite_time":true,
-    "show_hitboxes":true
+    "show_hitboxes":true,
+    "disable_taunts":false
   },
   "GAME_SETTINGS":{
     "game_speed":3
