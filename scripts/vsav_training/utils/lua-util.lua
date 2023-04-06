@@ -65,3 +65,20 @@ function NUM_TO_BIN_STR(num)
   s = s:gsub('.', octal2Bin)
   return s
 end
+
+---
+---Filters a table based on a predicate function and returns the remaining elements
+---
+---@param table table
+---@param condition fun(item: any): boolean
+---@return table
+---@nodiscard
+function FILTER_TABLE(table, condition)
+  local result = {}
+  for k, v in pairs(table) do
+    if condition(v) then
+      result[k] = v
+    end
+  end
+  return result
+end

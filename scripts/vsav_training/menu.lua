@@ -188,6 +188,7 @@ local function handle_integer_menu_item_change(menu_item, event)
   --
   -- Likely solution: a timed callback that sets menu_item.is_entering_text to
   -- `false` after a minute or so
+  -- TODO: investigate uiinput:reset() RE: above?
   elseif did_finish_entering_text then
     menu_item.display_value = math.min(menu_item.max_value, math.max(menu_item.min_value, menu_item.display_value))
     menu_item.is_entering_text = false
@@ -317,8 +318,11 @@ local dummy_settings_menu = {
 local training_options_menu = {
   create_heading_menu_item('Training Options'),
   create_toggle_menu_item('Infinite Time', 'On', 'Off', 'r', 'l', TRAINING_SETTINGS.TRAINING_OPTIONS, 'infinite_time', true),
-  create_toggle_menu_item('Show Hitboxes', 'Yes', 'No', 'r', 'l', TRAINING_SETTINGS.TRAINING_OPTIONS, 'show_hitboxes', true),
   create_toggle_menu_item('Disable Taunts', 'Yes', 'No', 'r', 'l', TRAINING_SETTINGS.TRAINING_OPTIONS, 'disable_taunts', false),
+  create_separator_menu_item(),
+  create_toggle_menu_item('Show Hitboxes', 'Yes', 'No', 'r', 'l', TRAINING_SETTINGS.TRAINING_OPTIONS, 'show_hitboxes', true),
+  create_toggle_menu_item('Fill Hitboxes', 'Yes', 'No', 'r', 'l', TRAINING_SETTINGS.TRAINING_OPTIONS, 'fill_hitboxes', true),
+  create_toggle_menu_item('Blank Screen', 'Yes', 'No', 'r', 'l', TRAINING_SETTINGS.TRAINING_OPTIONS, 'blank_screen', false),
   create_separator_menu_item(),
   create_generic_menu_item(string.format('Press %s to default', manager.ui:get_general_input_setting(manager.machine.ioport:token_to_input_type('UI_CLEAR'))), '', 'off'),
   create_separator_menu_item(),

@@ -91,5 +91,5 @@ end
 return {
   ['reset_dummy_state'] = reset_dummy_state,
   -- dummy_state doesn't register its own frame done due to dependency on game_state
-  ['registerFrameDone'] = update_player_parameters
+  ['register_frame_done'] = update_player_parameters
 }

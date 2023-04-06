@@ -15,28 +15,17 @@ local stage_select = require './scripts/vsav_training/stage-select'
 hitbox_viewer.start()
 -- imports and config end
 
--- scratchpad start
--- for k, v in pairs(manager.machine.ioport.types) do
---   print(k, v.name)
---   print(k, v.type)
---   print(k, v.group)
---   print(k, v.player)
---   print(k, v.token)
---   print(k, v.name)
---   print('===================')
--- end
--- scratchpad end
 emu.register_frame(function()
   if game_state.match_has_begun() then
-    hitbox_viewer.registerFrame()
+    hitbox_viewer.register_frame()
   else
     stage_select.select_stage()
   end
 end)
 emu.register_frame_done(function()
   if game_state.match_has_begun() then
-    dummy.registerFrameDone()
-    hitbox_viewer.registerFrameDone()
-    game_state.registerFrameDone()
+    dummy.register_frame_done()
+    hitbox_viewer.register_frame_done()
+    game_state.register_frame_done()
   end
 end)

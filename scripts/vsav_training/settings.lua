@@ -11,6 +11,8 @@ TRAINING_SETTINGS = {
   },
   TRAINING_OPTIONS = {
     show_hitboxes = true,
+    fill_hitboxes = true,
+    blank_screen = false,
     infinite_time = true,
     disable_taunts = false,
   },

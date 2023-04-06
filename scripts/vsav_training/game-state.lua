@@ -37,5 +37,5 @@ end
 return {
   ['match_has_begun'] = match_has_begun,
   ['return_to_character_select'] = return_to_character_select,
-  ['registerFrameDone'] = update_game_state_parameters
+  ['register_frame_done'] = update_game_state_parameters
 }

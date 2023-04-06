@@ -1,5 +1,7 @@
 -- Original code by dammit
 -- Heavily modified by N-Bee and MBD
+-- TODO: fix throw boxes
+-- TODO: proxy block boxes
 local mem_map = require './scripts/vsav_training/constants/memory-map'
 local m68k = require './scripts/vsav_training/constants/m68k'
 local m = require './scripts/vsav_training/utils/memory-util'
@@ -12,32 +14,32 @@ local game, frame_buffer, throw_buffer
 local config_globals
 
 local box_types = {
-  ['vulnerability']       = { color = 0x7777FF, fill = 0x40, outline = 0xFF },
-  ['attack']              = { color = 0xFF0000, fill = 0x40, outline = 0xFF },
-  ['proj. vulnerability'] = { color = 0x00FFFF, fill = 0x40, outline = 0xFF },
-  ['proj. attack']        = { color = 0xFF66FF, fill = 0x40, outline = 0xFF },
-  ['push']                = { color = 0x00FF00, fill = 0x20, outline = 0xFF },
-  ['throw']               = { color = 0xFFFF00, fill = 0x40, outline = 0xFF },
-  ['throwable']           = { color = 0xF0F0F0, fill = 0x20, outline = 0xFF },
+  ['vulnerability']       = { color = 0x7777FF, fill = 0x40, init_fill = 0x40, outline = 0xFF },
+  ['attack']              = { color = 0xFF0000, fill = 0x40, init_fill = 0x40, outline = 0xFF },
+  ['proj. vulnerability'] = { color = 0x00FFFF, fill = 0x40, init_fill = 0x40, outline = 0xFF },
+  ['proj. attack']        = { color = 0xFF66FF, fill = 0x40, init_fill = 0x40, outline = 0xFF },
+  ['push']                = { color = 0x00FF00, fill = 0x20, init_fill = 0x20, outline = 0xFF },
+  ['throw']               = { color = 0xFFFF00, fill = 0x40, init_fill = 0x40, outline = 0xFF },
+  ['throwable']           = { color = 0xF0F0F0, fill = 0x20, init_fill = 0x20, outline = 0xFF },
 }
 
 local globals = {
 	axis_color           = 0xFFFFFFFF,
-	blank_color          = 0xFFFFFFFF,
+	blank_color          = 0xFF000000,
 	axis_size            = 12,
 	mini_axis_size       = 2,
-	blank_screen         = false,
+	blank_screen         = TRAINING_SETTINGS.TRAINING_OPTIONS.blank_screen,
 	draw_axis            = true,
 	draw_mini_axis       = false,
 	draw_pushboxes       = true,
 	draw_throwable_boxes = false,
-	no_alpha             = false,
+	alpha                = TRAINING_SETTINGS.TRAINING_OPTIONS.fill_hitboxes,
 	ground_throw_height  = 0x50,
 }
 
 local profile = {
  {
-    games = { 'vsav' },
+    games = { 'vsavj' },
     number = {
       players = 2,
       projectiles = 32
@@ -98,7 +100,7 @@ local profile = {
     },
     breakpoints = {
       {
-        ['vsav'] = 0x029450, -- TODO: what's this?
+        ['vsavj'] = 0x029450, -- TODO: what's this?
         func = function()
           local stack = m.rdu(cpu.get_reg(m68k.reg.A7))
           local pc = cpu.get_reg(m68k.reg.A7)
@@ -113,7 +115,7 @@ local profile = {
         end
       },
       {
-        ['vsav'] = 0x0191A2, -- TODO: what's this?
+        ['vsavj'] = 0x0191A2, -- TODO: what's this?
         func = function()
           local stack = { cpu.get_reg(m68k.reg.A7), cpu.get_reg(m68k.reg.A7) + 4 }
           local target = 0x029472 -- TODO: what's this?
@@ -129,7 +131,7 @@ local profile = {
         end
       },
       {
-        ['vsav'] = 0x029638,
+        ['vsavj'] = 0x029638,
         func = function()
           local base = cpu.get_reg(m68k.reg.A4)
           insert_throw({
@@ -198,15 +200,17 @@ for game in ipairs(profile) do
   g.breakables = g.breakables or { number = 0 }
 end
 
-for _, box in pairs(box_types) do
-  if globals.no_alpha then
-    box.fill = 0x00000000 + box.color
+local function config_hitbox_fill()
+  for _, box in pairs(box_types) do
+    if globals.alpha then
+      box.fill = (box.init_fill * 0x1000000) + box.color
+    else
+      box.fill = 0x00000000 + box.color
+    end
     box.outline = 0xFF000000 + box.color
-  else
-    box.fill = (box.fill * 0x1000000) + box.color
-    box.outline = (box.outline * 0x1000000) + box.color
   end
 end
+config_hitbox_fill()
 
 local projectile_type = {
   ['attack'] = 'proj. attack',
@@ -264,6 +268,9 @@ local process_box_type = {
     end
   end,
   ['throw'] = function(obj, box)
+    if box.clear then
+      m.wbu(obj.base + box.id_ptr, 0)
+    end
   end,
   ['throwable'] = function(obj, box)
     if game.unthrowable(obj, box) or obj.projectile then
@@ -432,10 +439,13 @@ local render_hitboxes = function()
   if not f.match_active or not TRAINING_SETTINGS.TRAINING_OPTIONS.show_hitboxes then
     return
   end
-
-  -- if globals.blank_screen then
-  --   gui:draw_box(0, 0, emu.bufferwidth(), emu.bufferheight(), globals.blank_color)
-  -- end
+  if TRAINING_SETTINGS.TRAINING_OPTIONS.fill_hitboxes ~= globals.alpha then
+    globals.alpha = TRAINING_SETTINGS.TRAINING_OPTIONS.fill_hitboxes
+    config_hitbox_fill()
+  end
+  if TRAINING_SETTINGS.TRAINING_OPTIONS.blank_screen then
+    gui:draw_box(0, 0, gui.width, gui.height, globals.blank_color, globals.blank_color)
+  end
   for entry = 1, f.max_boxes or 0 do
     for _, obj in ipairs(f) do
       if obj[entry] then
@@ -532,11 +542,10 @@ local whatgame = function()
 end
 
 return {
-  ['start'] = function(_config)
-    config_globals = _config
+  ['start'] = function()
     whatgame()
     initialize_fb()
   end,
-  ['registerFrame'] = update_hitboxes,
-  ['registerFrameDone'] = render_hitboxes
+  ['register_frame'] = update_hitboxes,
+  ['register_frame_done'] = render_hitboxes
 }

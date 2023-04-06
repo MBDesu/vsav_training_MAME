@@ -26,6 +26,10 @@ local global_settings = {
     offset = 0x116,
     size = BYTE
   },
+  frameskip_flag = {
+    offset = 0x118,
+    size = BYTE
+  },
   screen_left = {
     offset = 0x290,
     size = WORD

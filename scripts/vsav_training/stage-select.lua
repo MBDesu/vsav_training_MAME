@@ -4,6 +4,7 @@ local mem_map = require './scripts/vsav_training/constants/memory-map'
 local stage_data = require './scripts/vsav_training/constants/stage-data'
 local cpu = require './scripts/vsav_training/utils/m68k-util'
 local m = require './scripts/vsav_training/utils/memory-util'
+local input = require './scripts/vsav_training/utils/input-util'
 
 local selected_stage = nil
 local was_coin_pressed_last_frame = false
@@ -30,8 +31,7 @@ local function resolve_char_id_to_stage_value(char_id)
 end
 
 local function select_stage()
-  local is_coin_pressed = manager.machine.ioport:type_pressed(manager.machine.ioport:token_to_input_type('COIN1'))
-
+  local is_coin_pressed = input.P1.COIN.is_pressed()
   -- TODO: map input tokens, etc. to game values
   -- TODO: consider API for ioport shit after above
   -- TODO: consider a breakpoint service that translates intuitive shit into debugger expressions
