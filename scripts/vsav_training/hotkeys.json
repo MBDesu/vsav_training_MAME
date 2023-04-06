@@ -1,4 +1,7 @@
 [{
-    "keys":"JOYCODE_1_BUTTON7",
-    "desc":"Return to Character Select"
+    "desc":"Return to Character Select",
+    "keys":"JOYCODE_1_BUTTON7"
+  },{
+    "desc":"Run Macro",
+    "keys":"JOYCODE_1_BUTTON5"
   }]

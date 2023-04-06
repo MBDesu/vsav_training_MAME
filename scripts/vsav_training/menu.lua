@@ -1,5 +1,6 @@
 local game_state = require './scripts/vsav_training/game-state'
 local file_util = require './scripts/vsav_training/utils/file-util'
+local macro = require './scripts/vsav_training/macro/macro'
 
 local hotkey_menu = false
 local hotkey_list = {}
@@ -341,6 +342,7 @@ local game_settings_menu = {
 local extra_functions_menu = {
   create_heading_menu_item('Extra Functions'),
   create_hotkeyable_menu_item('Return to Character Select', game_state.return_to_character_select),
+  create_hotkeyable_menu_item('Run Macro', macro.load_macro),
   create_separator_menu_item(),
 }
 

@@ -43,7 +43,7 @@ do
   p1_input_map[tokens.LK]    = input.P1.LK
   p1_input_map[tokens.MK]    = input.P1.MK
   p1_input_map[tokens.HK]    = input.P1.HK
-  p1_input_map[tokens.START] = input.P1.START
+  p1_input_map[tokens.START] = input.P1.START -- TODO: P1 start isn't working for some reason
   p1_input_map[tokens.COIN]  = input.P1.COIN
   p2_input_map[tokens.UP]    = input.P2.UP
   p2_input_map[tokens.DOWN]  = input.P2.DOWN
@@ -91,7 +91,6 @@ end
 local function parse_macro(macro_string)
   local macro_steps = {}
   local player = string.sub(macro_string, 1, 3)
-  print(player)
   local input_map
   if player == 'P1:' then input_map = p1_input_map else input_map = p2_input_map end
   macro_string = string.sub(macro_string, 4) -- strip label
@@ -123,25 +122,40 @@ local function parse_macro(macro_string)
   return macro_steps
 end
 
+local macros = {}
 local active_inputs = {}
 local step = 1
+local running = false
+
+local function activate_inputs()
+  for _, inp in pairs(active_inputs) do
+    inp.field:set_value(1)
+  end
+end
+
+local function deactivate_inputs()
+  for _, inp in pairs(active_inputs) do
+    print(step, 'deactivating ' .. inp.default_name)
+    inp.field:set_value(0)
+  end
+end
 
 local function execute_macro(p1, p2)
+  deactivate_inputs()
   active_inputs = {}
+  print(step, 'execute_macro')
   if p1[step] and not p1[step].wait then
-    print(step, 'not waiting')
     for _, entry in pairs(p1[step]) do
-      table.insert(active_inputs, entry.input.default_name)
+      print('entry', entry.input.default_name)
+      active_inputs[#active_inputs + 1] = entry.input
     end
   end
   if p2[step] and not p2[step].wait then
-    print(step, 'not waiting')
     for _, entry in pairs(p2[step]) do
-      table.insert(active_inputs, entry.input.default_name)
+      print('entry', entry.input.default_name)
+      active_inputs[#active_inputs + 1] = entry.input
     end
   end
-  print('step ' .. step .. ' active inputs:')
-  PRINT_TABLE(active_inputs)
   if step < #p1 or step < #p2 then
     step = step + 1
     return true
@@ -151,21 +165,43 @@ local function execute_macro(p1, p2)
   end
 end
 
+local function process_frame()
+  if #macros > 1 then
+    if not execute_macro(macros[1], macros[2]) then
+      PRINT_TABLE(active_inputs)
+      deactivate_inputs()
+      macros = {}
+      running = false
+    else
+      PRINT_TABLE(active_inputs)
+      running = true
+      activate_inputs()
+    end
+  end
+end
+
 local function load_macro(filename)
+  if running then return end
+  running = true
+  filename = 'recording.vsr'
   local p1, p2 = get_macro_file(filename)
   local p1_inputs = nil
   local p2_inputs = nil
   p1_inputs = parse_macro(p1)
+  if p1 == nil then
+    print('no file!')
+    running = false
+    return
+  end
   if p2 ~= nil then
     p2_inputs = parse_macro(p2)
   end
-  while execute_macro(p1_inputs, p2_inputs) do
-    print ('executing step ' .. step)
-  end
-  return p1_inputs, p2_inputs
+  table.insert(macros, p1_inputs)
+  table.insert(macros, p2_inputs)
 end
 
+emu.register_frame(process_frame)
 
 return {
-  ['load_macro'] = load_macro
+  ['load_macro'] = load_macro,
 }
