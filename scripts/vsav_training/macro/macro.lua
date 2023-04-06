@@ -142,7 +142,7 @@ local function execute_macro(p1, p2)
   end
   print('step ' .. step .. ' active inputs:')
   PRINT_TABLE(active_inputs)
-  if step <= #p1 or step <= #p2 then
+  if step < #p1 or step < #p2 then
     step = step + 1
     return true
   else
