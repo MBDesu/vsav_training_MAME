@@ -18,12 +18,13 @@ TRAINING_SETTINGS = {
   },
   GAME_SETTINGS = {
     game_speed = 3,
-  }
+  },
 }
 
 SCRIPT_SETTINGS = {
   training_settings_file = './scripts/vsav_training/training_settings.json',
-  hotkeys_settings_file = './scripts/vsav_training/hotkeys.json'
+  hotkeys_settings_file = './scripts/vsav_training/hotkeys.json',
+  macro_dir = './scripts/vsav_training/macro/recordings/',
 }
 
 return {

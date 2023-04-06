@@ -14,7 +14,6 @@ local stage_select = require './scripts/vsav_training/stage-select'
 
 hitbox_viewer.start()
 -- imports and config end
-
 emu.register_frame(function()
   if game_state.match_has_begun() then
     hitbox_viewer.register_frame()

@@ -2,6 +2,7 @@
 local status_1_table = {}
 local status_2_table = {}
 local jump_ground_roll_type_table = {}
+local facing_direction_or_flip_table = {}
 
 do
   status_1_table[0x00] = 'Normal'
@@ -40,10 +41,13 @@ do
   jump_ground_roll_type_table[0x00] = 'Neutral'
   jump_ground_roll_type_table[0x01] = 'Toward'
   jump_ground_roll_type_table[0xFF] = 'Away'
+  facing_direction_or_flip_table[0x00] = 'Left'
+  facing_direction_or_flip_table[0x01] = 'Right'
 end
 
 return {
   ['status_1_table'] = status_1_table,
   ['status_2_table'] = status_2_table,
-  ['jump_ground_roll_type_table'] = jump_ground_roll_type_table
+  ['jump_ground_roll_type_table'] = jump_ground_roll_type_table,
+  ['facing_direction_or_flip_table'] = facing_direction_or_flip_table,
 }
