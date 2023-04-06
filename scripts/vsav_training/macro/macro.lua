@@ -146,7 +146,7 @@ local function execute_macro(p1, p2)
     step = step + 1
     return true
   else
-    step = 0
+    step = 1
     return false
   end
 end
