@@ -67,16 +67,35 @@ function NUM_TO_BIN_STR(num)
 end
 
 ---
----Filters a table based on a predicate function and returns the remaining elements
+---Filters a table by values based on a predicate function and returns the remaining elements
 ---
----@param table table
----@param condition fun(item: any): boolean
+---@generic T
+---@param table table<T>
+---@param condition fun(item: T): boolean
 ---@return table
 ---@nodiscard
-function FILTER_TABLE(table, condition)
+function FILTER_TABLE_BY_VALUE(table, condition)
   local result = {}
   for k, v in pairs(table) do
     if condition(v) then
+      result[k] = v
+    end
+  end
+  return result
+end
+
+---
+---Filters a table by keys based on a predicate function and returns the remaining elements
+---
+---@generic T
+---@param table table<T>
+---@param condition fun(item: T): boolean
+---@return table
+---@nodiscard
+function FILTER_TABLE_BY_KEY(table, condition)
+  local result = {}
+  for k, v in pairs(table) do
+    if condition(k) then
       result[k] = v
     end
   end

@@ -1,5 +1,7 @@
 local ioport = manager.machine.ioport
 
+---@alias inputs table<string, { field: ioport_field | nil, default_name: string, is_pressed: (fun(): boolean) | nil }>
+---@type inputs
 local p1 = {
   UP    = { field = nil, default_name = 'P1 Up',          is_pressed = nil },
   DOWN  = { field = nil, default_name = 'P1 Down',        is_pressed = nil },
@@ -15,6 +17,7 @@ local p1 = {
   COIN  = { field = nil, default_name = 'Coin 1',         is_pressed = nil },
 }
 
+---@type inputs
 local p2 = {
   UP    = { field = nil, default_name = 'P2 Up',           is_pressed = nil },
   DOWN  = { field = nil, default_name = 'P2 Down',         is_pressed = nil },
@@ -30,7 +33,7 @@ local p2 = {
   COIN  = { field = nil, default_name = 'Coin 2',          is_pressed = nil },
 }
 
-
+---@param f ioport_field
 local function supported(f)
   if f.is_analog or f.is_toggle then
     return false
@@ -41,8 +44,13 @@ local function supported(f)
   end
 end
 
+---@return table<ioport_field>
 local function get_input_fields()
+  ---@type table<ioport_field>
   local fields = {}
+
+  ---@param a ioport_field
+  ---@param b ioport_field
   local function compare(a, b)
     if     a.device.tag < b.device.tag then return true
     elseif a.device.tag > b.device.tag then return false end
@@ -93,13 +101,14 @@ end
 return {
   ['P1'] = p1,
   ['P2'] = p2,
+  ---@return table<{ P1: inputs, P2: inputs }>
   ['get_currently_pressed'] = function()
     local filter = function(item)
       return item.is_pressed()
     end
     local pressed = { P1 = {}, P2 = {} }
-    pressed.P1 = FILTER_TABLE(p1, filter)
-    pressed.P2 = FILTER_TABLE(p2, filter)
+    pressed.P1 = FILTER_TABLE_BY_VALUE(p1, filter)
+    pressed.P2 = FILTER_TABLE_BY_VALUE(p2, filter)
     return pressed
   end
 }

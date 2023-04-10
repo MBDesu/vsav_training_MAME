@@ -1,15 +1,15 @@
-function some_other_function(offset, data, mask)
-  print(manager.machine.screens[':screen']:frame_number(),
-    manager.machine.devices[':maincpu'].spaces['program']:read_u8(0xFF8081),
-    manager.machine.devices[':maincpu'].spaces['program']:read_u8(0xFF80B4),
-    string.format('%x', offset),
-    string.format('%x', data),
-    string.format('%x', mask))
-end
-passthrough = manager.machine.devices[':maincpu'].spaces['program']:install_write_tap(0xFF8118, 0xFF8119, 'frameskip_flag', function(offset, data, mask)
-  some_other_function(offset, data, mask)
-  return
-end)
+-- function some_other_function(offset, data, mask)
+--   print(manager.machine.screens[':screen']:frame_number(),
+--     manager.machine.devices[':maincpu'].spaces['program']:read_u8(0xFF8081),
+--     manager.machine.devices[':maincpu'].spaces['program']:read_u8(0xFF80B4),
+--     string.format('%x', offset),
+--     string.format('%x', data),
+--     string.format('%x', mask))
+-- end
+-- passthrough = manager.machine.devices[':maincpu'].spaces['program']:install_write_tap(0xFF8118, 0xFF8119, 'frameskip_flag', function(offset, data, mask)
+--   some_other_function(offset, data, mask)
+--   return
+-- end)
 
   -- for k, v in pairs(manager.machine.ioport.types) do
   --   print(k, v.name)

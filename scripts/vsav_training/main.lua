@@ -1,6 +1,7 @@
 -- imports and config start
 require './scripts/vsav_training/utils/lua-util'
 require './scripts/vsav_training/settings'
+require './scripts/vsav_training/input-viewer'
 
 local file_util = require './scripts/vsav_training/utils/file-util'
 file_util.parse_training_settings()

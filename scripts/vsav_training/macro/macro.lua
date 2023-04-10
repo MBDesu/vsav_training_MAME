@@ -28,7 +28,9 @@ local tokens = {
 --   RELEASE         = '^',
 -- }
 
+---@type inputs
 local p1_input_map = {}
+---@type inputs
 local p2_input_map = {}
 
 -- can abstract this further for portability
@@ -82,9 +84,11 @@ local function parse_wait(macro_string, i)
   return { wait = tonumber(wait), i = j }
 end
 
-local function parse_token(c, input_map)
+---@param token string
+---@param input_map inputs
+local function parse_token(token, input_map)
   return {
-    input = input_map[c].field,
+    input = input_map[token].field,
   }
 end
 
@@ -129,14 +133,17 @@ local running = false
 
 local function activate_inputs()
   for _, inp in pairs(active_inputs) do
-    inp.field:set_value(1)
+    if inp.field ~= nil then
+      inp.field:set_value(1)
+    end
   end
 end
 
 local function deactivate_inputs()
   for _, inp in pairs(active_inputs) do
-    print(step, 'deactivating ' .. inp.default_name)
-    inp.field:set_value(0)
+    if inp.field ~= nil then
+      inp.field:set_value(0)
+    end
   end
 end
 
@@ -146,13 +153,11 @@ local function execute_macro(p1, p2)
   print(step, 'execute_macro')
   if p1[step] and not p1[step].wait then
     for _, entry in pairs(p1[step]) do
-      print('entry', entry.input.default_name)
       active_inputs[#active_inputs + 1] = entry.input
     end
   end
   if p2[step] and not p2[step].wait then
     for _, entry in pairs(p2[step]) do
-      print('entry', entry.input.default_name)
       active_inputs[#active_inputs + 1] = entry.input
     end
   end

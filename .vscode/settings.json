@@ -1,6 +1,5 @@
 {
-  "Lua.diagnostics.globals": [
-    "manager",
-    "emu"
+  "Lua.workspace.library": [
+    "..\\mame-lua\\library\\"
   ]
 }
