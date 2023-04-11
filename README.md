@@ -44,6 +44,6 @@ On character select, you may select a stage by pressing `COIN 1` on a character 
 | Jedah     | Fetus of God            |
 | Random    | Random (default)        |
 
-### Development
+# Development
 
-If you wish to contribute, feel free to download this repository and contribute however you like. I strongly recommend picking up my [mame-lua](https://github.com/MBDesu/mame-lua) [LuaLS](https://github.com/LuaLS) library addon and using both.
+If you wish to contribute, feel free to download this repository and contribute however you like. I strongly recommend picking up my [LuaLS](https://github.com/LuaLS) library addon [mame-lua](https://github.com/MBDesu/mame-lua) (along with LuaLS itself). It provides type definitions for MAME's Lua API.
