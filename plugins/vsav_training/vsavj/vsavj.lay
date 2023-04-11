@@ -95,7 +95,7 @@
       local hist_ent_height = 26
       local hist_ent_y = 272
       local hist_ents = {}
-      local buttons = { "LP", "MP", "HP, "LK", "MK", "HK" }
+      local buttons = { "LP", "MP", "HP", "LK", "MK", "HK" }
 
       file:set_resolve_tags_callback(function()
         view:set_prepare_items_callback(function()
