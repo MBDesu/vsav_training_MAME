@@ -22,7 +22,7 @@ You may double click any numeric entries to type your own values. You must first
 
 Note that some values have numeric constraints; if you enter a value outside of a valid range, they will automatically be updated to reflect a valid value.
 
-### Character Select
+### Stage Select
 
 On character select, you may select a stage by pressing `COIN 1` on a character portrait. Each corresponds to a different stage. Random will return the selection to random.
 | Character | Stage                   |
@@ -44,6 +44,6 @@ On character select, you may select a stage by pressing `COIN 1` on a character 
 | Jedah     | Fetus of God            |
 | Random    | Random (default)        |
 
-### Input Viewer
+### Development
 
-In order to enable/disable the input viewer, open the OSD menu (`TAB` by default) then navigate to `Video Options > Screen #0`. To enable the input viewer, select `Input Display`. To disable the  input viewer, select any of the other options (`Screen 0 Standard (4:3)` by default).
+If you wish to contribute, feel free to download this repository and contribute however you like. I strongly recommend picking up my [mame-lua](https://github.com/MBDesu/mame-lua) [LuaLS](https://github.com/LuaLS) library addon and using both.

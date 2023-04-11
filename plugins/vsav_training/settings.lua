@@ -15,6 +15,7 @@ TRAINING_SETTINGS = {
     blank_screen = false,
     infinite_time = true,
     disable_taunts = false,
+    show_input_viewer = true,
   },
   GAME_SETTINGS = {
     game_speed = 3,

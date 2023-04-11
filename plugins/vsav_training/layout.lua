@@ -1,3 +1,6 @@
+-- license:BSD-3-Clause
+-- copyright-holders:Carl
+-- Modified by MBDesu to work with this training mode to produce an input viewer
 local scripts = {}
 
 local function prepare_layout(file, script)
@@ -23,7 +26,6 @@ local function prepare_layout(file, script)
     table = table
   }
 
-  print(script)
   local script, err = load(script, script, 't', env)
   if not script then
     print('error loading layout script ', err)

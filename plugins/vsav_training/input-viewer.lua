@@ -1,5 +1,17 @@
 local inputs = require './vsav_training/utils/input-util'
-local screen = manager.machine.screens[':screen'];
+
+local input_viewer_view_index = 0
+local normal_4_3_view_index = 0
+local current_view_index = manager.machine.render.ui_target.view_index
+
+for i, view in ipairs(manager.machine.render.ui_target.view_names) do
+  if input_viewer_view_index ~= 0 and normal_4_3_view_index ~= 0 then break end
+  if view == 'Input Display' then
+    input_viewer_view_index = i
+  elseif view == 'Screen 0 Standard (4:3)' then
+    normal_4_3_view_index = i
+  end
+end
 
 ---@alias history_entry { dir_input: number, input: table<string>, duration: number|string }
 ---@alias input_history table<history_entry>
@@ -142,17 +154,25 @@ local function update_history(currently_pressed)
 end
 
 emu.register_frame(function()
-  local filter = function(input)
-    return do_track_inputs[input]
-  end
-  local currently_pressed = inputs.get_currently_pressed()
-  local p1_inputs = FILTER_TABLE_BY_KEY(currently_pressed['P1'], filter)
-  local p2_inputs = FILTER_TABLE_BY_KEY(currently_pressed['P2'], filter)
-  update_history({ P1 = p1_inputs, P2 = p2_inputs })
-end)
+  if TRAINING_SETTINGS.TRAINING_OPTIONS.show_input_viewer then
 
-emu.register_frame_done(function()
-  -- screen:draw_box(5, 5, 5 + screen.width - 10, screen.height - 10 + 5, 0xFF000000, 0x00000000)
+    if current_view_index ~= input_viewer_view_index then
+      manager.machine.render.ui_target.view_index = input_viewer_view_index
+      current_view_index = input_viewer_view_index
+    end
+    local filter = function(input)
+      return do_track_inputs[input]
+    end
+    local currently_pressed = inputs.get_currently_pressed()
+    local p1_inputs = FILTER_TABLE_BY_KEY(currently_pressed['P1'], filter)
+    local p2_inputs = FILTER_TABLE_BY_KEY(currently_pressed['P2'], filter)
+    update_history({ P1 = p1_inputs, P2 = p2_inputs })
+  else
+    if current_view_index ~= normal_4_3_view_index then
+      manager.machine.render.ui_target.view_index = normal_4_3_view_index
+      current_view_index = normal_4_3_view_index
+    end
+  end
 end)
 
 return {

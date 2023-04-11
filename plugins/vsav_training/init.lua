@@ -16,12 +16,10 @@ function vsav_training.set_folder(path)
 end
 
 function vsav_training.startplugin()
-  -- imports and config start
   local game_state
   local dummy
   local hitbox_viewer
   local stage_select
-  -- imports and config end
   emu.register_before_load_settings(function()
     local file_util = require './vsav_training/utils/file-util'
     file_util.parse_training_settings()

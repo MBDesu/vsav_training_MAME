@@ -325,6 +325,8 @@ local training_options_menu = {
   create_toggle_menu_item('Fill Hitboxes', 'Yes', 'No', 'r', 'l', TRAINING_SETTINGS.TRAINING_OPTIONS, 'fill_hitboxes', true),
   create_toggle_menu_item('Blank Screen', 'Yes', 'No', 'r', 'l', TRAINING_SETTINGS.TRAINING_OPTIONS, 'blank_screen', false),
   create_separator_menu_item(),
+  create_toggle_menu_item('Show Input Viewer', 'Yes', 'No', 'r', 'l', TRAINING_SETTINGS.TRAINING_OPTIONS, 'show_input_viewer', true),
+  create_separator_menu_item(),
   create_generic_menu_item(string.format('Press %s to default', manager.ui:get_general_input_setting(manager.machine.ioport:token_to_input_type('UI_CLEAR'))), '', 'off'),
   create_separator_menu_item(),
   create_default_all_menu_item(),
@@ -348,7 +350,6 @@ local extra_functions_menu = {
 
 local function load_hotkeys()
   local hotkeys = file_util.parse_json_file_to_object(SCRIPT_SETTINGS.hotkeys_settings_file)
-  -- if hotkeys ~=  nil then
   ---@diagnostic disable-next-line: param-type-mismatch
     for _, hotkey in ipairs(hotkeys) do
       for _, item in pairs(extra_functions_menu) do
@@ -357,7 +358,6 @@ local function load_hotkeys()
         end
       end
     end
-  -- end
 end
 
 local function populate_dummy_menu()
