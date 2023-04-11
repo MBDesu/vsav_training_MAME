@@ -1,4 +1,4 @@
-require './scripts/vsav_training/constants/data-types'
+require './vsav_training/constants/data-types'
 
 local global_settings = {
   base_addr = 0xFF8000,

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mamelayout version="2">
+
+  <element name="dir_input" defstate="5">
+    <image state="1" file="images/1_dir.png" />
+    <image state="2" file="images/2_dir.png" />
+    <image state="3" file="images/3_dir.png" />
+    <image state="4" file="images/4_dir.png" />
+    <image state="5" file="images/5_dir.png" />
+    <image state="6" file="images/6_dir.png" />
+    <image state="7" file="images/7_dir.png" />
+    <image state="8" file="images/8_dir.png" />
+    <image state="9" file="images/9_dir.png" />
+  </element>
+  <element name="lp_input" defstate="0">
+    <image state="0" file="images/no_button.png" />
+    <image state="1" file="images/L_button.png" />
+  </element>
+  <element name="mp_input" defstate="0">
+    <image state="0" file="images/no_button.png" />
+    <image state="1" file="images/M_button.png" />
+  </element>
+  <element name="hp_input" defstate="0">
+    <image state="0" file="images/no_button.png" />
+    <image state="1" file="images/H_button.png" />
+  </element>
+  <element name="lk_input" defstate="0">
+    <image state="0" file="images/no_button.png" />
+    <image state="1" file="images/L_button.png" />
+  </element>
+  <element name="mk_input" defstate="0">
+    <image state="0" file="images/no_button.png" />
+    <image state="1" file="images/M_button.png" />
+  </element>
+  <element name="hk_input" defstate="0">
+    <image state="0" file="images/no_button.png" />
+    <image state="1" file="images/H_button.png" />
+  </element>
+
+  <element name="input_display">
+    <rect>
+      <bounds left="0" top="22.4" right="384" bottom="224" />
+      <color red="0.5" green="0.5" blue="0.5" />
+    </rect>
+  </element>
+
+  <view name="Input Display">
+    <screen index="0">
+      <bounds x="0" y="0" width="400" height="300" />
+    </screen>
+    <element id="inp_p1" ref="input_display" blend="multiply">
+      <bounds x="0" y="280" width="400" height="20" />
+    </element>
+    <element id="dir_inp" ref="dir_input">
+      <bounds x="0" y="285" width="11" height="11" />
+    </element>
+    <element id="LP" ref="lp_input">
+      <bounds x="12" y="284" width="6" height="6" />
+    </element>
+    <element id="MP" ref="mp_input">
+      <bounds x="18" y="284" width="6" height="6" />
+    </element>
+    <element id="HP" ref="hp_input">
+      <bounds x="24" y="284" width="6" height="6" />
+    </element>
+    <element id="LK" ref="lp_input">
+      <bounds x="12" y="290" width="6" height="6" />
+    </element>
+    <element id="MK" ref="mp_input">
+      <bounds x="18" y="290" width="6" height="6" />
+    </element>
+    <element id="HK" ref="hp_input">
+      <bounds x="24" y="290" width="6" height="6" />
+    </element>
+  </view>
+
+  <script>
+    <![CDATA[
+      return {
+        set_state = function(p1_input_history, p2_input_history)
+          local buttons = { "LP", "MP", "HP", "LK", "MK", "HK" }
+          local items = file.views["Input Display"].items
+          items["dir_inp"]:set_state(p1_input_history.dir_input)
+          for _, button in pairs(buttons) do
+            items[button]:set_state(0)
+          end
+          for _, button in pairs(p1_input_history.input) do
+            items[button]:set_state(1)
+          end
+        end
+      }
+    ]]>
+  </script>
+
+</mamelayout>

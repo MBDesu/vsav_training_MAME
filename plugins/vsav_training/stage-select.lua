@@ -1,10 +1,10 @@
-require './scripts/vsav_training/constants/function-data'
-local character_data = require './scripts/vsav_training/constants/character-data'
-local mem_map = require './scripts/vsav_training/constants/memory-map'
-local stage_data = require './scripts/vsav_training/constants/stage-data'
-local cpu = require './scripts/vsav_training/utils/m68k-util'
-local m = require './scripts/vsav_training/utils/memory-util'
-local input = require './scripts/vsav_training/utils/input-util'
+require './vsav_training/constants/function-data'
+local character_data = require './vsav_training/constants/character-data'
+local mem_map = require './vsav_training/constants/memory-map'
+local stage_data = require './vsav_training/constants/stage-data'
+local cpu = require './vsav_training/utils/m68k-util'
+local m = require './vsav_training/utils/memory-util'
+local input = require './vsav_training/utils/input-util'
 
 local selected_stage = nil
 local was_coin_pressed_last_frame = false

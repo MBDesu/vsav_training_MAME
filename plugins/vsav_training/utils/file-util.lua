@@ -1,8 +1,10 @@
-local json = require './scripts/vsav_training/dependencies/dkjson'
+local json = require './vsav_training/dependencies/dkjson'
 
 local function parse_json_file_to_object(file_path)
-  local file = io.open(file_path, 'r')
+  file_path = file_path
+  local file, err = io.open(file_path, 'r')
   if not file then
+    print('couldn\'t open ' .. file_path, err)
     return nil
   end
   local obj = json.decode(file:read('a'))
@@ -11,8 +13,9 @@ local function parse_json_file_to_object(file_path)
 end
 
 local function parse_object_to_json_file(object, file_path)
-  local file = io.open(file_path, 'w+')
+  local file, err = io.open(file_path, 'w+')
   if not file then
+    print('couldn\'t open ' .. file_path, err)
     return nil
   end
   local json_string = json.encode(object, { indent = true })

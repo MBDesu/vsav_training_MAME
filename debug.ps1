@@ -1,1 +1,1 @@
-.\mame.exe vsavj -pluginspath .\scripts\vsav_training -script .\scripts\vsav_training\main.lua -debug
+.\mame.exe -plugins -plugin vsav_training -debug -sound none vsavj

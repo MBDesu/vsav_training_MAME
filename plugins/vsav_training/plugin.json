@@ -1,0 +1,10 @@
+{
+  "plugin": {
+	"name": "vsav_training",
+	"description": "Training mode for Vampire Savior",
+	"version": "0.0.1",
+	"author": "MBDesu",
+	"type": "plugin",
+	"start": "false"
+  }
+}

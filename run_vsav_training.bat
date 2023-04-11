@@ -1,3 +1,3 @@
 @echo off
-start mame.exe vsavj -pluginspath %cd%\scripts\vsav_training -script %cd%\scripts\vsav_training\main.lua -debug
+start mame.exe -plugins -plugin vsav_training -debug vsavj
 exit

@@ -1,4 +1,4 @@
-local input = require './scripts/vsav_training/utils/input-util'
+local input = require './vsav_training/utils/input-util'
 
 -- local labels = {
 --   P1 = 'P1:',

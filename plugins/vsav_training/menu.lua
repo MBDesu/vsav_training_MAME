@@ -1,6 +1,6 @@
-local game_state = require './scripts/vsav_training/game-state'
-local file_util = require './scripts/vsav_training/utils/file-util'
-local macro = require './scripts/vsav_training/macro/macro'
+local game_state = require './vsav_training/game-state'
+local file_util = require './vsav_training/utils/file-util'
+local macro = require './vsav_training/macro/macro'
 
 local hotkey_menu = false
 local hotkey_list = {}
@@ -348,16 +348,17 @@ local extra_functions_menu = {
 
 local function load_hotkeys()
   local hotkeys = file_util.parse_json_file_to_object(SCRIPT_SETTINGS.hotkeys_settings_file)
+  -- if hotkeys ~=  nil then
   ---@diagnostic disable-next-line: param-type-mismatch
-  for _, hotkey in ipairs(hotkeys) do
-    for _, item in pairs(extra_functions_menu) do
-      if hotkey.desc == item.name and item.type == 'hotkeyable' then
-        item.hotkeys = { pressed = false, keys = manager.machine.input:seq_from_tokens(hotkey.keys) }
+    for _, hotkey in ipairs(hotkeys) do
+      for _, item in pairs(extra_functions_menu) do
+        if hotkey.desc == item.name and item.type == 'hotkeyable' then
+          item.hotkeys = { pressed = false, keys = manager.machine.input:seq_from_tokens(hotkey.keys) }
+        end
       end
     end
-  end
+  -- end
 end
-load_hotkeys() -- idk if calling this here is safe but who cares
 
 local function populate_dummy_menu()
   local menu = {}
@@ -517,3 +518,7 @@ emu.register_frame(function()
     end
   end
 end)
+
+return {
+  ['register_prestart'] = load_hotkeys
+}

@@ -2,10 +2,10 @@
 -- Heavily modified by N-Bee and MBD
 -- TODO: fix throw boxes
 -- TODO: proxy block boxes
-local mem_map = require './scripts/vsav_training/constants/memory-map'
-local m68k = require './scripts/vsav_training/constants/m68k'
-local m = require './scripts/vsav_training/utils/memory-util'
-local cpu = require './scripts/vsav_training/utils/m68k-util'
+local mem_map = require './vsav_training/constants/memory-map'
+local m68k = require './vsav_training/constants/m68k'
+local m = require './vsav_training/utils/memory-util'
+local cpu = require './vsav_training/utils/m68k-util'
 local gui = manager.machine.screens[':screen']
 local system = manager.machine.system
 

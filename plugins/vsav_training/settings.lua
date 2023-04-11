@@ -22,9 +22,9 @@ TRAINING_SETTINGS = {
 }
 
 SCRIPT_SETTINGS = {
-  training_settings_file = './scripts/vsav_training/training_settings.json',
-  hotkeys_settings_file = './scripts/vsav_training/hotkeys.json',
-  macro_dir = './scripts/vsav_training/macro/recordings/',
+  training_settings_file = 'plugins/vsav_training/training_settings.json',
+  hotkeys_settings_file = 'plugins/vsav_training/hotkeys.json',
+  macro_dir = 'plugins/vsav_training/macro/recordings/',
 }
 
 return {

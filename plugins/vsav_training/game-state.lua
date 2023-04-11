@@ -1,5 +1,5 @@
-local mem_map = require './scripts/vsav_training/constants/memory-map'
-local m = require './scripts/vsav_training/utils/memory-util'
+local mem_map = require './vsav_training/constants/memory-map'
+local m = require './vsav_training/utils/memory-util'
 
 local function match_has_begun()
   -- TODO: map these offsets

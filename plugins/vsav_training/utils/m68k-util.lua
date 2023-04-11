@@ -1,4 +1,4 @@
-local m68k = require './scripts/vsav_training/constants/m68k'
+local m68k = require './vsav_training/constants/m68k'
 local cpu = manager.machine.devices[':maincpu']
 local debug = cpu.debug
 local program_space = cpu.spaces['program']
