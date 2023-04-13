@@ -26,6 +26,7 @@ SCRIPT_SETTINGS = {
   training_settings_file = 'plugins/vsav_training/training_settings.json',
   hotkeys_settings_file = 'plugins/vsav_training/hotkeys.json',
   macro_dir = 'plugins/vsav_training/macro/recordings/',
+  image_dir = 'plugins/vsav_training/images/',
 }
 
 return {

@@ -1,10 +1,6 @@
--- FIXME: this is turbo broke
+-- fair warning, this is a state management mess
 local input = require './vsav_training/utils/input-util'
-
--- local labels = {
---   P1 = 'P1:',
---   P2 = 'P2:',
--- }
+local screen = manager.machine.screens[':screen']
 
 local tokens = {
   UP      = 'U',
@@ -33,6 +29,15 @@ local tokens = {
 local p1_input_map = {}
 ---@type inputs
 local p2_input_map = {}
+---@type table<ioport_field>
+local active_inputs = {}
+local token_input_map = {}
+local macros = {}
+local macro_recording = {}
+
+local step = 1
+local is_executing_macro = false
+local is_recording_macro = false
 
 -- can abstract this further for portability
 do
@@ -46,7 +51,7 @@ do
   p1_input_map[tokens.LK]    = input.P1.LK
   p1_input_map[tokens.MK]    = input.P1.MK
   p1_input_map[tokens.HK]    = input.P1.HK
-  p1_input_map[tokens.START] = input.P1.START -- TODO: P1 start isn't working for some reason
+  p1_input_map[tokens.START] = input.P1.START
   p1_input_map[tokens.COIN]  = input.P1.COIN
   p2_input_map[tokens.UP]    = input.P2.UP
   p2_input_map[tokens.DOWN]  = input.P2.DOWN
@@ -60,6 +65,30 @@ do
   p2_input_map[tokens.HK]    = input.P2.HK
   p2_input_map[tokens.START] = input.P2.START
   p2_input_map[tokens.COIN]  = input.P2.COIN
+  token_input_map[input.P1.UP.default_name]    = tokens.UP
+  token_input_map[input.P1.DOWN.default_name]  = tokens.DOWN
+  token_input_map[input.P1.LEFT.default_name]  = tokens.LEFT
+  token_input_map[input.P1.RIGHT.default_name] = tokens.RIGHT
+  token_input_map[input.P1.LP.default_name]    = tokens.LP
+  token_input_map[input.P1.MP.default_name]    = tokens.MP
+  token_input_map[input.P1.HP.default_name]    = tokens.HP
+  token_input_map[input.P1.LK.default_name]    = tokens.LK
+  token_input_map[input.P1.MK.default_name]    = tokens.MK
+  token_input_map[input.P1.HK.default_name]    = tokens.HK
+  token_input_map[input.P1.START.default_name] = tokens.START
+  token_input_map[input.P1.COIN.default_name]  = tokens.COIN
+  token_input_map[input.P2.UP.default_name]    = tokens.UP
+  token_input_map[input.P2.DOWN.default_name]  = tokens.DOWN
+  token_input_map[input.P2.LEFT.default_name]  = tokens.LEFT
+  token_input_map[input.P2.RIGHT.default_name] = tokens.RIGHT
+  token_input_map[input.P2.LP.default_name]    = tokens.LP
+  token_input_map[input.P2.MP.default_name]    = tokens.MP
+  token_input_map[input.P2.HP.default_name]    = tokens.HP
+  token_input_map[input.P2.LK.default_name]    = tokens.LK
+  token_input_map[input.P2.MK.default_name]    = tokens.MK
+  token_input_map[input.P2.HK.default_name]    = tokens.HK
+  token_input_map[input.P2.START.default_name] = tokens.START
+  token_input_map[input.P2.COIN.default_name]  = tokens.COIN
 end
 
 local function get_macro_file(filename)
@@ -127,23 +156,18 @@ local function parse_macro(macro_string)
   return macro_steps
 end
 
-local macros = {}
-local active_inputs = {}
-local step = 1
-local running = false
-
 local function activate_inputs()
-  for _, inp in pairs(active_inputs) do
-    if inp.field ~= nil then
-      inp.field:set_value(1)
+  for _, inp in ipairs(active_inputs) do
+    if inp ~= nil then
+      inp:set_value(1)
     end
   end
 end
 
 local function deactivate_inputs()
-  for _, inp in pairs(active_inputs) do
-    if inp.field ~= nil then
-      inp.field:set_value(0)
+  for _, inp in ipairs(active_inputs) do
+    if inp ~= nil then
+      inp:set_value(0)
     end
   end
 end
@@ -151,7 +175,6 @@ end
 local function execute_macro(p1, p2)
   deactivate_inputs()
   active_inputs = {}
-  print(step, 'execute_macro')
   if p1[step] and not p1[step].wait then
     for _, entry in pairs(p1[step]) do
       active_inputs[#active_inputs + 1] = entry.input
@@ -171,24 +194,92 @@ local function execute_macro(p1, p2)
   end
 end
 
-local function process_frame()
+local function process_execution_frame()
+  -- TODO: draw_play_icon()
   if #macros > 1 then
     if not execute_macro(macros[1], macros[2]) then
-      PRINT_TABLE(active_inputs)
       deactivate_inputs()
       macros = {}
-      running = false
+      is_executing_macro = false
     else
-      PRINT_TABLE(active_inputs)
-      running = true
+      is_executing_macro = true
       activate_inputs()
+    end
+  else
+    is_executing_macro = false
+  end
+end
+
+local function process_recording_frame()
+  -- TODO: draw_recording_icon()
+  macro_recording[#macro_recording + 1] = input.get_currently_pressed()
+end
+
+---@param player number
+---@return string
+local function parse_macro_recording(player)
+  local macro_tokens = ''
+  local player_index = ''
+  if player == 1 then
+    macro_tokens = 'P1:'
+    player_index = 'P1'
+  else
+    macro_tokens = 'P2:'
+    player_index = 'P2'
+  end
+  for _, inputs_on_frame in ipairs(macro_recording) do
+    local count = 0
+    for _, macro_input in pairs(inputs_on_frame[player_index]) do
+      count = count + 1
+      macro_tokens = macro_tokens .. token_input_map[macro_input.field.default_name]
+    end
+    if count == 0 then
+      macro_tokens = macro_tokens .. ','
+    end
+  end
+  return macro_tokens
+end
+
+---@param filename string
+---@return nil
+local function save_macro(filename)
+  local p1_inputs = parse_macro_recording(1)
+  local p2_inputs = parse_macro_recording(2)
+  -- TODO: process >= n commas into Wn
+  -- process_macro_string(p1_inputs)
+  -- process_macro_string(p2_inputs)
+  local file = io.open(SCRIPT_SETTINGS.macro_dir .. filename, 'w+')
+  if not file then return nil end
+  file:write(p1_inputs .. '\n' .. p2_inputs)
+  file:close()
+end
+
+local debounce_recording = 0
+
+---Called externally to begin/end recording a macro
+---@param filename string
+local function record_macro(filename)
+  if is_executing_macro then return end
+  if debounce_recording == 0 then
+    if is_recording_macro then
+      is_recording_macro = false
+      debounce_recording = 10
+      filename = 'recording.vsr'
+      save_macro(filename)
+      macro_recording = {}
+    else
+      is_recording_macro = true
+      debounce_recording = 10
     end
   end
 end
 
+---Called externally to load a macro
+---and begin executing it
+---@param filename string
 local function load_macro(filename)
-  if running then return end
-  running = true
+  if is_executing_macro or is_recording_macro then return end
+  is_executing_macro = true
   filename = 'recording.vsr'
   local p1, p2 = get_macro_file(filename)
   local p1_inputs = nil
@@ -196,7 +287,7 @@ local function load_macro(filename)
   p1_inputs = parse_macro(p1)
   if p1 == nil then
     print('no file!')
-    running = false
+    is_executing_macro = false
     return
   end
   if p2 ~= nil then
@@ -206,8 +297,19 @@ local function load_macro(filename)
   table.insert(macros, p2_inputs)
 end
 
-emu.register_frame(process_frame)
+emu.register_frame(function()
+  if debounce_recording > 0 then
+    debounce_recording = debounce_recording - 1
+  end
+  if is_executing_macro and not is_recording_macro then
+    process_execution_frame()
+  end
+  if is_recording_macro and not is_executing_macro then
+    process_recording_frame()
+  end
+end)
 
 return {
   ['load_macro'] = load_macro,
+  ['record_macro'] = record_macro,
 }

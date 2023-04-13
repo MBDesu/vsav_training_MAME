@@ -66,9 +66,7 @@ function NUM_TO_BIN_STR(num)
   return s
 end
 
----
 ---Filters a table by values based on a predicate function and returns the remaining elements
----
 ---@generic T
 ---@param table table<T>
 ---@param condition fun(item: T): boolean
@@ -84,9 +82,7 @@ function FILTER_TABLE_BY_VALUE(table, condition)
   return result
 end
 
----
 ---Filters a table by keys based on a predicate function and returns the remaining elements
----
 ---@generic T
 ---@param table table<T>
 ---@param condition fun(item: T): boolean
@@ -97,6 +93,23 @@ function FILTER_TABLE_BY_KEY(table, condition)
   for k, v in pairs(table) do
     if condition(k) then
       result[k] = v
+    end
+  end
+  return result
+end
+
+---Creates a 2D array from a 1D array, returning the 2D array
+---@generic T
+---@param tbl table<T>
+---@param row_length number
+---@return table<table<T>>
+---@nodiscard
+function CREATE_2D_ARRAY_FROM_1D_ARRAY(tbl, row_length)
+  local result = { {} }
+  for i, v in ipairs(tbl) do
+    result[#result][#result[#result] + 1] = v
+    if i % row_length == 0 and i < #tbl then
+      result[#result + 1] = {}
     end
   end
   return result

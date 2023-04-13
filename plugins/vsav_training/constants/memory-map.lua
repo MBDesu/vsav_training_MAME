@@ -1,5 +1,3 @@
-require './vsav_training/constants/data-types'
-
 local global_settings = {
   base_addr = 0xFF8000,
   coin_and_start_input = {

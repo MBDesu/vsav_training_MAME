@@ -9,14 +9,12 @@ A training mode for vsavj on MAME.
 ## Windows Installation 
   1. Copy `run_vsav_training.bat` to wherever your `mame.exe` is located (referred to after this as `<MAME installation>`). Make sure there are no spaces in the directory path.
   2. Copy the `/plugins/vsav_training/` folder to `<MAME installation>/plugins/`
-  3. Copy the  `/plugins/vsav_training/vsavj/` folder to `<MAME installation>/artwork/`
-  4. Run `run_vsav_training.bat`
+  3. Run `run_vsav_training.bat`
+  4. Press F12 to hide the debugger and start the game
 
 ## Use
 
 ### General
-
-**Warning:** this plugin does not play well with the default MAME layout plugin. That's because I had to hack it for the input viewer. Please ensure it is **disabled**.
 
 Press whatever key you use to bring up the MAME in-system menu (`TAB` by default) and navigate to `Plugin Options`. Here you will find myriad settings.
 

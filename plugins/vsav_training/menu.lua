@@ -344,7 +344,8 @@ local game_settings_menu = {
 local extra_functions_menu = {
   create_heading_menu_item('Extra Functions'),
   create_hotkeyable_menu_item('Return to Character Select', game_state.return_to_character_select),
-  create_hotkeyable_menu_item('Run Macro', macro.load_macro),
+  create_hotkeyable_menu_item('Record Macro', macro.record_macro),
+  create_hotkeyable_menu_item('Play Macro', macro.load_macro),
   create_separator_menu_item(),
 }
 

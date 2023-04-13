@@ -2,6 +2,9 @@
     "desc":"Return to Character Select",
     "keys":"JOYCODE_1_BUTTON7"
   },{
-    "desc":"Run Macro",
+    "desc":"Record Macro",
+    "keys":"JOYCODE_1_SLIDER1_NEG_SWITCH"
+  },{
+    "desc":"Play Macro",
     "keys":"JOYCODE_1_BUTTON5"
-}]
+  }]

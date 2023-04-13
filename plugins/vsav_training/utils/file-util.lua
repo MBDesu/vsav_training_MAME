@@ -1,7 +1,17 @@
 local json = require './vsav_training/dependencies/dkjson'
 
+---@param file_path string
+---@return string|nil
+local function read_file_as_string(file_path)
+  local file, err = io.open(file_path, 'r')
+  if not file then
+    print('couldn\'t open' .. file_path, err)
+    return nil
+  end
+  return file:read('a')
+end
+
 local function parse_json_file_to_object(file_path)
-  file_path = file_path
   local file, err = io.open(file_path, 'r')
   if not file then
     print('couldn\'t open ' .. file_path, err)
@@ -43,5 +53,6 @@ return {
   ['parse_training_settings'] = parse_training_settings,
   ['save_training_settings'] = save_training_settings,
   ['parse_object_to_json_file'] = parse_object_to_json_file,
-  ['parse_json_file_to_object'] = parse_json_file_to_object
+  ['parse_json_file_to_object'] = parse_json_file_to_object,
+  ['read_file_as_string'] = read_file_as_string,
 }

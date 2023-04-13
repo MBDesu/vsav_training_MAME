@@ -5,9 +5,9 @@ local exports = {
   author = { name = 'MBDesu' }
 }
 
-require './vsav_training/layout'
 require './vsav_training/utils/lua-util'
 require './vsav_training/settings'
+require './vsav_training/constants/data-types'
 
 local vsav_training = exports
 
@@ -28,9 +28,9 @@ function vsav_training.startplugin()
   emu.register_prestart(function()
     if not game_state then
       game_state = require './vsav_training/game-state'
+      require './vsav_training/input-viewer'
       hitbox_viewer = require './vsav_training/hitbox-viewer'
       dummy = require './vsav_training/dummy-state'
-      require './vsav_training/input-viewer'
       hitbox_viewer.start()
       require('./vsav_training/menu').register_prestart()
     end

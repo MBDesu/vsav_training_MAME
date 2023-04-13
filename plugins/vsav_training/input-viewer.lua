@@ -1,20 +1,48 @@
-local inputs = require './vsav_training/utils/input-util'
-
-local input_viewer_view_index = 0
-local normal_4_3_view_index = 0
-local current_view_index = manager.machine.render.ui_target.view_index
-
-for i, view in ipairs(manager.machine.render.ui_target.view_names) do
-  if input_viewer_view_index ~= 0 and normal_4_3_view_index ~= 0 then break end
-  if view == 'Input Display' then
-    input_viewer_view_index = i
-  elseif view == 'Screen 0 Standard (4:3)' then
-    normal_4_3_view_index = i
-  end
-end
-
 ---@alias history_entry { dir_input: number, input: table<string>, duration: number|string }
 ---@alias input_history table<history_entry>
+
+local game_state = require './vsav_training/game-state'
+local inputs = require './vsav_training/utils/input-util'
+local image_util = require './vsav_training/utils/image-util'
+local render = manager.machine.render
+local ui_container = render.ui_container
+local sc = image_util.scale_coordinate
+local sx = image_util.scale_x
+local sy = image_util.scale_y
+
+-- mostly done to precompute values, but also is pseudo-config I guess
+local dir_and_but_history_entry_config = {
+  entry_height    = sy(21, 300),
+  entry_width     = sx(37, 400),
+  entry_right_pad = sx(2, 400),
+
+  dir_input_left_pad = sx(2, 400),
+  dir_input_top_pad  = sy(5, 300),
+  dir_input_width    = sx(11, 400),
+  dir_input_height   = sy(16, 300),
+
+  button_inp_left_margin = sx(1, 400),
+  button_inp_top_margin  = sy(4, 300),
+  button_inp_left_pad    = sx(1, 400),
+  button_inp_height      = sy(6, 300),
+  button_inp_width       = sx(6, 400),
+}
+
+---@type table<render_texture>
+local dir_textures = {}
+---@type table<render_texture>
+local button_textures = {}
+local button_filenames = { L = 'L', M = 'M', H = 'H', n = 'no' }
+for i = 1, 9 do
+  dir_textures[i] = render:texture_alloc(
+    image_util.argb32_bitmap_from_square_rgba32_bitmap_data(SCRIPT_SETTINGS.image_dir .. i .. '_dir.data')
+  )
+end
+for k, v in pairs(button_filenames) do
+  button_textures[k] = render:texture_alloc(
+    image_util.argb32_bitmap_from_square_rgba32_bitmap_data(SCRIPT_SETTINGS.image_dir .. v .. '_button.data')
+  )
+end
 
 ---@type input_history
 local p1_input_history = {
@@ -25,38 +53,23 @@ local p2_input_history = {
   { dir_input = 5, input = {}, duration = 1 }
 }
 
-local do_track_inputs = {
-  UP = true,
-  DOWN = true,
-  LEFT = true,
-  RIGHT = true,
-  LP = true,
-  MP = true,
-  HP = true,
-  LK = true,
-  MK = true,
-  HK = true,
-  COIN = false,
-  START = false,
-}
-
 local sorting_table = {
-  UP = 1,
-  DOWN = 2,
-  LEFT = 3,
+  UP    = 1,
+  DOWN  = 2,
+  LEFT  = 3,
   RIGHT = 4,
-  LP = 5,
-  MP = 6,
-  HP = 7,
-  LK = 8,
-  MK = 9,
-  HK = 10,
+  LP    = 5,
+  MP    = 6,
+  HP    = 7,
+  LK    = 8,
+  MK    = 9,
+  HK    = 10,
 }
 
 local direction_modifiers = {
-  UP = 3,
-  DOWN = -3,
-  LEFT = -1,
+  UP    = 3,
+  DOWN  = -3,
+  LEFT  = -1,
   RIGHT = 1,
 }
 
@@ -153,25 +166,97 @@ local function update_history(currently_pressed)
   end
 end
 
+local function get_button_textures(history_entry)
+  local textures = {{ button_textures['n'], button_textures['n'], button_textures['n'] },
+                    { button_textures['n'], button_textures['n'], button_textures['n'] }}
+  for _, v in pairs(history_entry.input) do
+    if v ~= nil and v == 'LP' then textures[1][1] = button_textures['L'] end
+    if v ~= nil and v == 'MP' then textures[1][2] = button_textures['M'] end
+    if v ~= nil and v == 'HP' then textures[1][3] = button_textures['H'] end
+    if v ~= nil and v == 'LK' then textures[2][1] = button_textures['L'] end
+    if v ~= nil and v == 'MK' then textures[2][2] = button_textures['M'] end
+    if v ~= nil and v == 'HK' then textures[2][3] = button_textures['H'] end
+  end
+  return textures
+end
+
+---Draws a history entry with directional input and buttons at the specified
+---coordinates. `x` and `y` should be scaled to the UI container's `xscale`
+---and `yscale`.
+---@param x number Left edge of entry, scaled relative to UI
+---@param y number Top edge of entry, scaled relative to UI
+---@param input history_entry
+local function draw_dir_and_but_history_entry(x, y, input)
+  local entry_left   = x
+  local entry_top    = y
+  local entry_right  = x + dir_and_but_history_entry_config.entry_width
+  local entry_bottom = y + dir_and_but_history_entry_config.entry_height
+
+  local dir_input_left     = x + dir_and_but_history_entry_config.dir_input_left_pad
+  local dir_input_right    = x + dir_and_but_history_entry_config.dir_input_left_pad + dir_and_but_history_entry_config.dir_input_width
+  local dir_input_top      = y + dir_and_but_history_entry_config.dir_input_top_pad
+  local dir_input_bottom   = y + dir_and_but_history_entry_config.dir_input_height
+
+  local button_inp_left        = dir_input_right
+  local button_inp_top         = y + dir_and_but_history_entry_config.button_inp_top_margin
+  local button_textures_curr   = get_button_textures(input)
+
+  local duration_400_scale_left_pad = 16.5
+  if type(input.duration) == 'string' then
+    duration_400_scale_left_pad = 16.5
+  else
+    if input.duration > 9  then duration_400_scale_left_pad = duration_400_scale_left_pad - 1.9 end
+    if input.duration > 99 then duration_400_scale_left_pad = duration_400_scale_left_pad - 1.9 end
+  end
+
+  local duration_left_pad = sx(duration_400_scale_left_pad, 400)
+  local duration_top_pad  = sx(0.5, 400)
+  local duration_left     = x + duration_left_pad
+  local duration_top      = duration_top_pad + entry_bottom
+
+  ui_container:draw_box(entry_left, entry_top, entry_right, entry_bottom, 0xFF000000, 0xFF000000)
+  if duration_left > 0 then
+    ui_container:draw_text(duration_left, duration_top, tostring(input.duration), 0xFF93E9BE)
+  end
+  ui_container:draw_quad(dir_textures[input.dir_input], dir_input_left, dir_input_top, dir_input_right, dir_input_bottom)
+  for i = 1, 2 do
+    for j = 1, 3 do
+      local x_pos = button_inp_left + dir_and_but_history_entry_config.button_inp_left_margin + ((j - 1) * dir_and_but_history_entry_config.button_inp_width + dir_and_but_history_entry_config.button_inp_left_pad)
+      local y_pos = button_inp_top + ((i - 1) * dir_and_but_history_entry_config.button_inp_height)
+      ui_container:draw_quad(button_textures_curr[i][j], x_pos, y_pos, x_pos + dir_and_but_history_entry_config.button_inp_width, y_pos + dir_and_but_history_entry_config.button_inp_height)
+    end
+  end
+end
+
 emu.register_frame(function()
   if TRAINING_SETTINGS.TRAINING_OPTIONS.show_input_viewer then
-
-    if current_view_index ~= input_viewer_view_index then
-      manager.machine.render.ui_target.view_index = input_viewer_view_index
-      current_view_index = input_viewer_view_index
-    end
-    local filter = function(input)
-      return do_track_inputs[input]
-    end
     local currently_pressed = inputs.get_currently_pressed()
-    local p1_inputs = FILTER_TABLE_BY_KEY(currently_pressed['P1'], filter)
-    local p2_inputs = FILTER_TABLE_BY_KEY(currently_pressed['P2'], filter)
+    local p1_inputs = currently_pressed['P1']
+    local p2_inputs = currently_pressed['P2']
     update_history({ P1 = p1_inputs, P2 = p2_inputs })
-  else
-    if current_view_index ~= normal_4_3_view_index then
-      manager.machine.render.ui_target.view_index = normal_4_3_view_index
-      current_view_index = normal_4_3_view_index
+  end
+end)
+
+local display_x1, display_y1 = sc(0, 265, 400, 300)
+local display_x2, display_y2 = sc(400, 300, 400, 300)
+local input_history_start_x, input_history_start_y = sc(360, 267, 400, 300)
+emu.register_frame_done(function()
+  if TRAINING_SETTINGS.TRAINING_OPTIONS.show_input_viewer and game_state and game_state.match_has_begun() then
+    ui_container:draw_box(display_x1, display_y1, display_x2, display_y2, 0x7F555555, 0x7F555555)
+    for i = 0, 10 do
+      local start_x = input_history_start_x - (i * dir_and_but_history_entry_config.entry_width) - (i * dir_and_but_history_entry_config.entry_right_pad)
+      if p1_input_history[#p1_input_history-i] == nil then break end
+      draw_dir_and_but_history_entry(start_x, input_history_start_y, p1_input_history[#p1_input_history - i])
     end
+  end
+end)
+
+emu.register_stop(function()
+  for _, texture in pairs(dir_textures) do
+    texture:free()
+  end
+  for _, texture in pairs(button_textures) do
+    texture:free()
   end
 end)
 
