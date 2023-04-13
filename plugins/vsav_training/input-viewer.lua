@@ -12,17 +12,17 @@ local sy = image_util.scale_y
 
 -- mostly done to precompute values, but also is pseudo-config I guess
 local dir_and_but_history_entry_config = {
-  entry_height    = sy(21, 300),
+  entry_height    = sy(16, 300),
   entry_width     = sx(37, 400),
   entry_right_pad = sx(2, 400),
 
   dir_input_left_pad = sx(2, 400),
-  dir_input_top_pad  = sy(5, 300),
+  dir_input_top_pad  = sy(2.5, 300),
   dir_input_width    = sx(11, 400),
-  dir_input_height   = sy(16, 300),
+  dir_input_height   = sy(11, 300),
 
   button_inp_left_margin = sx(1, 400),
-  button_inp_top_margin  = sy(4, 300),
+  button_inp_top_margin  = sy(2, 300),
   button_inp_left_pad    = sx(1, 400),
   button_inp_height      = sy(6, 300),
   button_inp_width       = sx(6, 400),
@@ -195,7 +195,7 @@ local function draw_dir_and_but_history_entry(x, y, input)
   local dir_input_left     = x + dir_and_but_history_entry_config.dir_input_left_pad
   local dir_input_right    = x + dir_and_but_history_entry_config.dir_input_left_pad + dir_and_but_history_entry_config.dir_input_width
   local dir_input_top      = y + dir_and_but_history_entry_config.dir_input_top_pad
-  local dir_input_bottom   = y + dir_and_but_history_entry_config.dir_input_height
+  local dir_input_bottom   = y + dir_and_but_history_entry_config.dir_input_top_pad + dir_and_but_history_entry_config.dir_input_height
 
   local button_inp_left        = dir_input_right
   local button_inp_top         = y + dir_and_but_history_entry_config.button_inp_top_margin
@@ -210,7 +210,7 @@ local function draw_dir_and_but_history_entry(x, y, input)
   end
 
   local duration_left_pad = sx(duration_400_scale_left_pad, 400)
-  local duration_top_pad  = sx(0.5, 400)
+  local duration_top_pad  = 0
   local duration_left     = x + duration_left_pad
   local duration_top      = duration_top_pad + entry_bottom
 
@@ -237,9 +237,9 @@ emu.register_frame(function()
   end
 end)
 
-local display_x1, display_y1 = sc(0, 265, 400, 300)
+local display_x1, display_y1 = sc(0, 274, 400, 300)
 local display_x2, display_y2 = sc(400, 300, 400, 300)
-local input_history_start_x, input_history_start_y = sc(360, 267, 400, 300)
+local input_history_start_x, input_history_start_y = sc(360, 275, 400, 300)
 emu.register_frame_done(function()
   if TRAINING_SETTINGS.TRAINING_OPTIONS.show_input_viewer and game_state and game_state.match_has_begun() then
     ui_container:draw_box(display_x1, display_y1, display_x2, display_y2, 0x7F555555, 0x7F555555)
