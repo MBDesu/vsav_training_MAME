@@ -1,6 +1,10 @@
 -- fair warning, this is a state management mess
+-- FIXME: this shit broke; namely, the language needs redesigned or checking
+-- for the case where an input is followed by a single comma being interpreted
+-- as <input> -> wait two frames needs to be fixed
+-- really, I think just writing the logic for holds would fix the whole thing
 local input = require './vsav_training/utils/input-util'
-local screen = manager.machine.screens[':screen']
+local image_util = require './vsav_training/utils/image-util'
 
 local tokens = {
   UP      = 'U',
@@ -24,6 +28,14 @@ local tokens = {
 --   HOLD            = '_',
 --   RELEASE         = '^',
 -- }
+
+local play_icon_texture = manager.machine.render:texture_alloc(
+  image_util.argb32_bitmap_from_square_rgba32_bitmap_data(SCRIPT_SETTINGS.image_dir .. 'play.data')
+)
+
+local record_icon_texture = manager.machine.render:texture_alloc(
+  image_util.argb32_bitmap_from_square_rgba32_bitmap_data(SCRIPT_SETTINGS.image_dir .. 'record.data')
+)
 
 ---@type inputs
 local p1_input_map = {}
@@ -65,6 +77,7 @@ do
   p2_input_map[tokens.HK]    = input.P2.HK
   p2_input_map[tokens.START] = input.P2.START
   p2_input_map[tokens.COIN]  = input.P2.COIN
+
   token_input_map[input.P1.UP.default_name]    = tokens.UP
   token_input_map[input.P1.DOWN.default_name]  = tokens.DOWN
   token_input_map[input.P1.LEFT.default_name]  = tokens.LEFT
@@ -164,8 +177,8 @@ local function activate_inputs()
   end
 end
 
-local function deactivate_inputs()
-  for _, inp in ipairs(active_inputs) do
+local function deactivate_inputs(inputs)
+  for _, inp in ipairs(inputs) do
     if inp ~= nil then
       inp:set_value(0)
     end
@@ -173,7 +186,7 @@ local function deactivate_inputs()
 end
 
 local function execute_macro(p1, p2)
-  deactivate_inputs()
+  local previously_active = active_inputs
   active_inputs = {}
   if p1[step] and not p1[step].wait then
     for _, entry in pairs(p1[step]) do
@@ -185,6 +198,15 @@ local function execute_macro(p1, p2)
       active_inputs[#active_inputs + 1] = entry.input
     end
   end
+  for _, v in pairs(previously_active) do
+    for _, w in pairs(active_inputs) do
+      if v.default_name == w.default_name then
+        v = nil
+      end
+    end
+  end
+  deactivate_inputs(previously_active)
+  activate_inputs()
   if step < #p1 or step < #p2 then
     step = step + 1
     return true
@@ -194,24 +216,34 @@ local function execute_macro(p1, p2)
   end
 end
 
+local play_x0, play_y0 = image_util.scale_coordinate(20, 60, 400, 300)
+local play_x1, play_y1 = image_util.scale_coordinate(42, 82, 400, 300)
+local function draw_play_icon()
+  manager.machine.render.ui_container:draw_quad(play_icon_texture, play_x0, play_y0, play_x1, play_y1)
+end
+
 local function process_execution_frame()
-  -- TODO: draw_play_icon()
+  draw_play_icon()
   if #macros > 1 then
     if not execute_macro(macros[1], macros[2]) then
-      deactivate_inputs()
+      deactivate_inputs(active_inputs)
       macros = {}
       is_executing_macro = false
     else
       is_executing_macro = true
-      activate_inputs()
     end
   else
     is_executing_macro = false
   end
 end
 
+
+local function draw_record_icon()
+  manager.machine.render.ui_container:draw_quad(record_icon_texture, play_x0, play_y0, play_x1, play_y1)
+end
+
 local function process_recording_frame()
-  -- TODO: draw_recording_icon()
+  draw_record_icon()
   macro_recording[#macro_recording + 1] = input.get_currently_pressed()
 end
 
@@ -297,7 +329,7 @@ local function load_macro(filename)
   table.insert(macros, p2_inputs)
 end
 
-emu.register_frame(function()
+emu.register_frame_done(function()
   if debounce_recording > 0 then
     debounce_recording = debounce_recording - 1
   end
@@ -307,6 +339,11 @@ emu.register_frame(function()
   if is_recording_macro and not is_executing_macro then
     process_recording_frame()
   end
+end)
+
+emu.register_stop(function()
+  play_icon_texture:free()
+  record_icon_texture:free()
 end)
 
 return {

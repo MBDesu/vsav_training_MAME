@@ -1,5 +1,6 @@
 ---@alias history_entry { dir_input: number, input: table<string>, duration: number|string }
 ---@alias input_history table<history_entry>
+---@alias input_history_graph_data {  }
 
 local game_state = require './vsav_training/game-state'
 local inputs = require './vsav_training/utils/input-util'
@@ -26,7 +27,34 @@ local dir_and_but_history_entry_config = {
   button_inp_left_pad    = sx(1, 400),
   button_inp_height      = sy(6, 300),
   button_inp_width       = sx(6, 400),
+
+  duration_400_scale_left_pad = 16.5,
 }
+
+local dir_history_entry_config = {
+  entry_height    = sy(16, 300),
+  entry_width     = sx(16, 400),
+  entry_right_pad = sx(2, 400),
+
+  duration_400_scale_left_pad = 5.2,
+}
+
+local but_history_entry_config = {
+  entry_height    = sy(16, 300),
+  entry_width     = sx(24, 400),
+  entry_right_pad = sx(2, 400),
+
+  button_inp_left_margin = sx(2, 400),
+  button_inp_top_margin  = sy(2, 300),
+  button_inp_left_pad    = sx(1, 400),
+  button_inp_height      = sy(6, 300),
+  button_inp_width       = sx(6, 400),
+
+  duration_400_scale_left_pad = 10
+}
+
+local duration_text_color = 0xFF93E9BE
+local input_history_container_color = 0x7F555555
 
 ---@type table<render_texture>
 local dir_textures = {}
@@ -149,8 +177,8 @@ local function update_player_history(player, current_player_inputs)
     end
   else
     local duration = player_input_history[#player_input_history].duration
-    if duration == '-' then return end
-    if duration > 998 then player_input_history[#player_input_history].duration = '-' return end
+    if duration == '—' then return end
+    if duration > 998 then player_input_history[#player_input_history].duration = '—' return end
     player_input_history[#player_input_history].duration = player_input_history[#player_input_history].duration + 1
   end
 end
@@ -180,52 +208,163 @@ local function get_button_textures(history_entry)
   return textures
 end
 
+local function get_text_coordinates_for_history_entry(entry_left, entry_bottom, entry_type, duration)
+  -- TODO: figure out the math to calculate duration_400_scale_left_pad instead
+  -- of hard coding it
+  local duration_400_scale_left_pad
+  if entry_type == 'dir' then
+     duration_400_scale_left_pad = dir_history_entry_config.duration_400_scale_left_pad
+  elseif entry_type == 'but' then
+    duration_400_scale_left_pad = but_history_entry_config.duration_400_scale_left_pad
+  else
+    duration_400_scale_left_pad = dir_and_but_history_entry_config.duration_400_scale_left_pad
+  end
+  if type(duration) ~= 'string' then
+    if duration > 9  then duration_400_scale_left_pad = duration_400_scale_left_pad - 1.9 end
+    if duration > 99 then duration_400_scale_left_pad = duration_400_scale_left_pad - 1.9 end
+  end
+
+  local duration_left_pad = sx(duration_400_scale_left_pad, 400)
+  local duration_top_pad  = 0
+  local duration_left     = entry_left + duration_left_pad
+  local duration_top      = duration_top_pad + entry_bottom
+  return duration_left, duration_top
+end
+
+local function draw_dir_history_entry(x, y, input)
+  local entry_left = x
+  local entry_top = y
+  local entry_right = entry_left + dir_history_entry_config.entry_width
+  local entry_bottom = entry_top + dir_history_entry_config.entry_height
+  ui_container:draw_quad(dir_textures[input.dir_input],
+                         entry_left,
+                         entry_top,
+                         entry_left + dir_history_entry_config.entry_width,
+                         entry_top + dir_history_entry_config.entry_height)
+  local duration_left, duration_top = get_text_coordinates_for_history_entry(entry_left, entry_bottom, 'dir', input.duration)
+  if duration_left > 0 then
+    ui_container:draw_text(duration_left, duration_top, tostring(input.duration), duration_text_color)
+  end
+  return entry_right + dir_history_entry_config.entry_right_pad
+end
+
 ---Draws a history entry with directional input and buttons at the specified
 ---coordinates. `x` and `y` should be scaled to the UI container's `xscale`
 ---and `yscale`.
 ---@param x number Left edge of entry, scaled relative to UI
 ---@param y number Top edge of entry, scaled relative to UI
 ---@param input history_entry
+---@return number width The total width the entry takes up
 local function draw_dir_and_but_history_entry(x, y, input)
   local entry_left   = x
   local entry_top    = y
   local entry_right  = x + dir_and_but_history_entry_config.entry_width
   local entry_bottom = y + dir_and_but_history_entry_config.entry_height
 
-  local dir_input_left     = x + dir_and_but_history_entry_config.dir_input_left_pad
-  local dir_input_right    = x + dir_and_but_history_entry_config.dir_input_left_pad + dir_and_but_history_entry_config.dir_input_width
-  local dir_input_top      = y + dir_and_but_history_entry_config.dir_input_top_pad
-  local dir_input_bottom   = y + dir_and_but_history_entry_config.dir_input_top_pad + dir_and_but_history_entry_config.dir_input_height
+  local dir_input_left   = x + dir_and_but_history_entry_config.dir_input_left_pad
+  local dir_input_right  = x + dir_and_but_history_entry_config.dir_input_left_pad + dir_and_but_history_entry_config.dir_input_width
+  local dir_input_top    = y + dir_and_but_history_entry_config.dir_input_top_pad
+  local dir_input_bottom = y + dir_and_but_history_entry_config.dir_input_top_pad + dir_and_but_history_entry_config.dir_input_height
 
-  local button_inp_left        = dir_input_right
-  local button_inp_top         = y + dir_and_but_history_entry_config.button_inp_top_margin
-  local button_textures_curr   = get_button_textures(input)
+  local button_inp_left      = dir_input_right
+  local button_inp_top       = y + dir_and_but_history_entry_config.button_inp_top_margin
+  local button_textures_curr = get_button_textures(input)
 
-  local duration_400_scale_left_pad = 16.5
-  if type(input.duration) == 'string' then
-    duration_400_scale_left_pad = 16.5
-  else
-    if input.duration > 9  then duration_400_scale_left_pad = duration_400_scale_left_pad - 1.9 end
-    if input.duration > 99 then duration_400_scale_left_pad = duration_400_scale_left_pad - 1.9 end
-  end
-
-  local duration_left_pad = sx(duration_400_scale_left_pad, 400)
-  local duration_top_pad  = 0
-  local duration_left     = x + duration_left_pad
-  local duration_top      = duration_top_pad + entry_bottom
+  local duration_left, duration_top = get_text_coordinates_for_history_entry(entry_left, entry_bottom, 'both', input.duration)
 
   ui_container:draw_box(entry_left, entry_top, entry_right, entry_bottom, 0xFF000000, 0xFF000000)
   if duration_left > 0 then
-    ui_container:draw_text(duration_left, duration_top, tostring(input.duration), 0xFF93E9BE)
+    ui_container:draw_text(duration_left, duration_top, tostring(input.duration), duration_text_color)
   end
   ui_container:draw_quad(dir_textures[input.dir_input], dir_input_left, dir_input_top, dir_input_right, dir_input_bottom)
   for i = 1, 2 do
     for j = 1, 3 do
       local x_pos = button_inp_left + dir_and_but_history_entry_config.button_inp_left_margin + ((j - 1) * dir_and_but_history_entry_config.button_inp_width + dir_and_but_history_entry_config.button_inp_left_pad)
       local y_pos = button_inp_top + ((i - 1) * dir_and_but_history_entry_config.button_inp_height)
-      ui_container:draw_quad(button_textures_curr[i][j], x_pos, y_pos, x_pos + dir_and_but_history_entry_config.button_inp_width, y_pos + dir_and_but_history_entry_config.button_inp_height)
+      ui_container:draw_quad(button_textures_curr[i][j],
+                             x_pos,
+                             y_pos,
+                             x_pos + dir_and_but_history_entry_config.button_inp_width,
+                             y_pos + dir_and_but_history_entry_config.button_inp_height)
     end
   end
+  return entry_right + dir_and_but_history_entry_config.entry_right_pad
+end
+
+local function draw_but_history_entry(x, y, input)
+  local entry_left   = x
+  local entry_top    = y
+  local entry_right  = entry_left + but_history_entry_config.entry_width
+  local entry_bottom = entry_top + but_history_entry_config.entry_height
+
+  local but_input_left   = x
+  local but_input_top    = y + but_history_entry_config.button_inp_top_margin
+  -- local but_input_right  = x + but_history_entry_config.button_inp_width
+  -- local but_input_bottom = y + but_history_entry_config.button_inp_height
+  local button_textures_curr = get_button_textures(input)
+
+  local duration_left, duration_top = get_text_coordinates_for_history_entry(entry_left, entry_bottom, 'but', input.duration)
+
+  ui_container:draw_box(entry_left, entry_top, entry_right, entry_bottom, 0xFF000000, 0xFF000000)
+  if duration_left > 0 then
+    ui_container:draw_text(duration_left, duration_top, tostring(input.duration), duration_text_color)
+  end
+  for i = 1, 2 do
+    for j = 1, 3 do
+      local x_pos = but_input_left + but_history_entry_config.button_inp_left_margin + ((j - 1) * but_history_entry_config.button_inp_width + but_history_entry_config.button_inp_left_pad)
+      local y_pos = but_input_top + ((i - 1) * but_history_entry_config.button_inp_height)
+      ui_container:draw_quad(button_textures_curr[i][j],
+                             x_pos,
+                             y_pos,
+                             x_pos + but_history_entry_config.button_inp_width,
+                             y_pos + but_history_entry_config.button_inp_height)
+    end
+  end
+end
+
+local function get_history_entry_metadata(history_entry)
+  local entry_type = 'dir'
+  local entry_config = dir_history_entry_config
+  if #history_entry.input > 0 then
+    entry_type = 'both'
+    entry_config = dir_and_but_history_entry_config
+    if history_entry.dir_input == 5 then
+      entry_type = 'but'
+      entry_config = but_history_entry_config
+    end
+  end
+  return entry_type, entry_config.entry_width + entry_config.entry_right_pad
+end
+
+local input_history_container_left, input_history_container_top     = sc(0, 274, 400, 300)
+local input_history_container_right, input_history_container_bottom = sc(400, 300, 400, 300)
+local history_entries_start, history_entries_top                    = sc(363, 275, 400, 300)
+local function draw_input_history()
+    local history_entries_width = 0
+
+    ui_container:draw_box(input_history_container_left,
+                          input_history_container_top,
+                          input_history_container_right,
+                          input_history_container_bottom,
+                          input_history_container_color,
+                          input_history_container_color)
+
+    for i = 0, 30 do
+      local current_entry = p1_input_history[#p1_input_history - i]
+      if current_entry == nil then break end
+      local entry_type, entry_width = get_history_entry_metadata(current_entry)
+      history_entries_width = history_entries_width + entry_width
+      local entry_left = history_entries_start - history_entries_width
+      if entry_left + entry_width > 0 then
+        if entry_type == 'dir' then
+          draw_dir_history_entry(entry_left, history_entries_top, current_entry)
+        elseif entry_type == 'both' then
+          draw_dir_and_but_history_entry(entry_left, history_entries_top, current_entry)
+        else -- entry_type == 'but'
+          draw_but_history_entry(entry_left, history_entries_top, current_entry)
+        end
+      end
+    end
 end
 
 emu.register_frame(function()
@@ -237,17 +376,12 @@ emu.register_frame(function()
   end
 end)
 
-local display_x1, display_y1 = sc(0, 274, 400, 300)
-local display_x2, display_y2 = sc(400, 300, 400, 300)
-local input_history_start_x, input_history_start_y = sc(360, 275, 400, 300)
 emu.register_frame_done(function()
-  if TRAINING_SETTINGS.TRAINING_OPTIONS.show_input_viewer and game_state and game_state.match_has_begun() then
-    ui_container:draw_box(display_x1, display_y1, display_x2, display_y2, 0x7F555555, 0x7F555555)
-    for i = 0, 10 do
-      local start_x = input_history_start_x - (i * dir_and_but_history_entry_config.entry_width) - (i * dir_and_but_history_entry_config.entry_right_pad)
-      if p1_input_history[#p1_input_history-i] == nil then break end
-      draw_dir_and_but_history_entry(start_x, input_history_start_y, p1_input_history[#p1_input_history - i])
-    end
+  if TRAINING_SETTINGS.TRAINING_OPTIONS.show_input_viewer and
+      game_state and
+      game_state.match_has_begun() and
+      not manager.ui.menu_active then
+    draw_input_history()
   end
 end)
 

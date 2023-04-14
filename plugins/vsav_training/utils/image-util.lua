@@ -31,35 +31,31 @@ local function argb32_bitmap_from_square_rgba32_bitmap_data(filename)
 end
 
 ---Scales a value relative to the UI's current xscale
----@param x number
----@param x_scale number
----@return number
+---@param x number Desired y units, in `x_scale` scale
+---@param x_scale number The scale to convert from
+---@return number `x` scaled to the current UI `xscale`
 local function scale_x(x, x_scale)
   return x * (manager.machine.render.ui_container.xscale / x_scale)
 end
 
 ---Scales a value relative to the UI's current yscale
----@param y number
----@param y_scale number
----@return number
+---@param y number Desired y units, in `y_scale` scale
+---@param y_scale number The scale to convert from
+---@return number `y` scaled to the current UI `yscale`
 local function scale_y(y, y_scale)
   return y * (manager.machine.render.ui_container.yscale / y_scale)
 end
 
 ---Scales a coordinate pair to the UI's current scaling. Useful for scaling
 ---elements to consistent sizes across UI.
----@param x number Desired x units
----@param y number Desired y units
+---@param x number Desired x units, in `x_scale` scale
+---@param y number Desired y units, in `y_scale` scale
 ---@param x_scale number Scale `x` is in
 ---@param y_scale number Scale `y` is in
 ---@return number x_units The number of `x` units in UI scale
 ---@return number y_units The number of `y` units in UI scale
 local function scale_coordinate(x, y, x_scale, y_scale)
-  local ui_x_scale = manager.machine.render.ui_container.xscale
-  local ui_y_scale = manager.machine.render.ui_container.yscale
-  local x_scale_unit = ui_x_scale / x_scale
-  local y_scale_unit = ui_y_scale / y_scale
-  return x * x_scale_unit, y * y_scale_unit
+  return scale_x(x, x_scale), scale_y(y, y_scale)
 end
 
 return {
