@@ -12,10 +12,13 @@ TRAINING_SETTINGS = {
   TRAINING_OPTIONS = {
     show_hitboxes = true,
     fill_hitboxes = true,
-    blank_screen = false,
+    show_only_hitboxes = false,
     infinite_time = true,
     disable_taunts = false,
     show_input_viewer = true,
+    hide_background = false,
+    hide_life_bars = false,
+    hide_meters = false,
   },
   GAME_SETTINGS = {
     game_speed = 3,

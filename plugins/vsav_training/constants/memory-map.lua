@@ -1,8 +1,20 @@
+local stage_data = require './vsav_training/constants/stage-data'
+local TEST_MENU  = require './vsav_training/constants/test-menu-settings'
+
 local global_settings = {
   base_addr = 0xFF8000,
+  background_layer = {
+    offset = 0x33,
+    size = BYTE,
+  },
   coin_and_start_input = {
     offset = 0x60,
     size = DWORD
+  },
+  coin_mode = {
+    offset = 0x97,
+    size = WORD,
+    values = TEST_MENU.SETTINGS.SYSTEM_SETTINGS.COIN_SETTING
   },
   game_speed_menu_setting = {
     offset = 0xA3,
@@ -14,7 +26,8 @@ local global_settings = {
   },
   current_stage = {
     offset = 0x100,
-    size = WORD
+    size = WORD,
+    values = stage_data.STAGE_VALUES
   },
   game_clock = {
     offset = 0x109,
@@ -60,6 +73,10 @@ local player_data = {
   white_health = {
     offset = 0x52,
     size = WORD
+  },
+  hitstop_timer = {
+    offset = 0x5C,
+    size = BYTE
   },
   head_hurtbox_ptr = {
     offset = 0x80,
@@ -109,6 +126,18 @@ local player_data = {
     offset = 0x10A,
     size = WORD
   },
+  poison_gas_timer = {
+    offset = 0x146,
+    size = BYTE
+  },
+  gc_timer = {
+    offset = 0x158,
+    size = WORD
+  },
+  pushback_timer = {
+    offset = 0x164,
+    size = WORD
+  },
   remaining_taunts = {
     offset = 0x179,
     size = BYTE
@@ -119,8 +148,23 @@ local projectile_data = {
   projectiles_base_addr = 0xFF9400,
 }
 
+local hud_settings = {
+  hud_base_addr = 0xFFF000,
+  meter_display = {
+    offset = 0x00,
+    size = WORD
+    -- set to 0x101 to display; 0x0 to hide
+  },
+  lifebar_display = {
+    offset = 0x200,
+    size = WORD
+    -- set to 0x101 to display; 0x0 to hide
+  }
+}
+
 return {
   ['global_settings'] = global_settings,
   ['player_data'] = player_data,
   ['projectile_data'] = projectile_data,
+  ['hud_settings'] = hud_settings,
 }

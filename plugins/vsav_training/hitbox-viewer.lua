@@ -173,25 +173,25 @@ local profile = {
 
 for game in ipairs(profile) do
   local g = profile[game]
-  g.box_type = g.offset.id_ptr and 'id ptr' or 'hitbox ptr'
-  g.ground_level = g.ground_level or -0x0F
+  g.box_type            = g.offset.id_ptr and 'id ptr' or 'hitbox ptr'
+  g.ground_level        = g.ground_level or -0x0F
   g.offset.player_space = g.offset.player_space or 0x400
-  g.offset.pos_x = g.offset.pos_x or 0x10
-  g.offset.pos_y = g.offset.pos_y or g.offset.pos_x + 0x4
-  g.offset.hitbox_ptr = g.offset.hitbox_ptr or {}
-  g.box = g.box or {}
-  g.box.radius_read = g.box.radius_read or m.rwu
-  g.box.offset_read = g.box.radius_read == m.rwu and m.rwi or m.rbi
-  g.box.val_x    = g.box.val_x or 0x0
-  g.box.val_y    = g.box.val_y or 0x2
-  g.box.rad_x    = g.box.rad_x or 0x4
-  g.box.rad_y    = g.box.rad_y or 0x6
-  g.box.radscale = g.box.radscale or 1
-  g.no_hit       = g.no_hit       or function() end
-  g.invulnerable = g.invulnerable or function() end
-  g.unpushable   = g.unpushable   or function() end
-  g.unthrowable  = g.unthrowable  or function() end
-  g.projectile_active = g.projectile_active or function(obj)
+  g.offset.pos_x        = g.offset.pos_x or 0x10
+  g.offset.pos_y        = g.offset.pos_y or g.offset.pos_x + 0x4
+  g.offset.hitbox_ptr   = g.offset.hitbox_ptr or {}
+  g.box                 = g.box or {}
+  g.box.radius_read     = g.box.radius_read or m.rwu
+  g.box.offset_read     = g.box.radius_read == m.rwu and m.rwi or m.rbi
+  g.box.val_x           = g.box.val_x or 0x0
+  g.box.val_y           = g.box.val_y or 0x2
+  g.box.rad_x           = g.box.rad_x or 0x4
+  g.box.rad_y           = g.box.rad_y or 0x6
+  g.box.radscale        = g.box.radscale or 1
+  g.no_hit              = g.no_hit       or function() end
+  g.invulnerable        = g.invulnerable or function() end
+  g.unpushable          = g.unpushable   or function() end
+  g.unthrowable         = g.unthrowable  or function() end
+  g.projectile_active   = g.projectile_active or function(obj)
     if m.rwu(obj.base) > 0x0100 and m.rbu(obj.base + 0x04) == 0x02 then
       return true
     end
@@ -443,7 +443,7 @@ local render_hitboxes = function()
     globals.alpha = TRAINING_SETTINGS.TRAINING_OPTIONS.fill_hitboxes
     config_hitbox_fill()
   end
-  if TRAINING_SETTINGS.TRAINING_OPTIONS.blank_screen then
+  if TRAINING_SETTINGS.TRAINING_OPTIONS.show_only_hitboxes then
     gui:draw_box(0, 0, gui.width, gui.height, globals.blank_color, globals.blank_color)
   end
   for entry = 1, f.max_boxes or 0 do
@@ -485,12 +485,6 @@ local render_hitboxes = function()
 end
 
 local initialize_bps = function()
-  -- for _, pc in ipairs(globals.breakpoints or {}) do
-  --   memory.registerexec(pc, nil)
-  -- end
-  -- for _, addr in ipairs(globals.watchpoints or {}) do
-  --   memory.registerwrite(addr, nil)
-  -- end
   globals.breakpoints, globals.watchpoints = {}, {}
 end
 
@@ -525,13 +519,11 @@ local whatgame = function()
         end
         for _, bp in ipairs(game.breakpoints or {}) do
           local pc = bp[system.name] or bp[system.parent] + game.clones[system.name]
-          -- memory.registerexec(pc, bp.func)
           table.insert(globals.breakpoints, pc)
         end
         for _, wp in ipairs(game.watchpoints or {}) do
           for p = 1, game.number.players do
             local addr = game.address.player + (p - 1) * game.offset.player_space + wp.offset
-            -- memory.registerwrite(addr, wp.size, wp.func)
             table.insert(globals.watchpoints, addr)
           end
         end

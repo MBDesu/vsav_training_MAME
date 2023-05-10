@@ -1,4 +1,3 @@
-local game_state = require './vsav_training/game-state'
 local file_util = require './vsav_training/utils/file-util'
 local macro = require './vsav_training/macro/macro'
 
@@ -321,11 +320,15 @@ local training_options_menu = {
   create_toggle_menu_item('Infinite Time', 'On', 'Off', 'r', 'l', TRAINING_SETTINGS.TRAINING_OPTIONS, 'infinite_time', true),
   create_toggle_menu_item('Disable Taunts', 'Yes', 'No', 'r', 'l', TRAINING_SETTINGS.TRAINING_OPTIONS, 'disable_taunts', false),
   create_separator_menu_item(),
+  create_toggle_menu_item('Show Input Viewer', 'Yes', 'No', 'r', 'l', TRAINING_SETTINGS.TRAINING_OPTIONS, 'show_input_viewer', true),
   create_toggle_menu_item('Show Hitboxes', 'Yes', 'No', 'r', 'l', TRAINING_SETTINGS.TRAINING_OPTIONS, 'show_hitboxes', true),
   create_toggle_menu_item('Fill Hitboxes', 'Yes', 'No', 'r', 'l', TRAINING_SETTINGS.TRAINING_OPTIONS, 'fill_hitboxes', true),
-  create_toggle_menu_item('Blank Screen', 'Yes', 'No', 'r', 'l', TRAINING_SETTINGS.TRAINING_OPTIONS, 'blank_screen', false),
+  create_toggle_menu_item('Show Only Hitboxes', 'Yes', 'No', 'r', 'l', TRAINING_SETTINGS.TRAINING_OPTIONS, 'show_only_hitboxes', false),
   create_separator_menu_item(),
-  create_toggle_menu_item('Show Input Viewer', 'Yes', 'No', 'r', 'l', TRAINING_SETTINGS.TRAINING_OPTIONS, 'show_input_viewer', true),
+  create_toggle_menu_item('Hide Background', 'Yes', 'No', 'r', 'l', TRAINING_SETTINGS.TRAINING_OPTIONS, 'hide_background', false),
+  create_toggle_menu_item('Hide Life Bars', 'Yes', 'No', 'r', 'l', TRAINING_SETTINGS.TRAINING_OPTIONS, 'hide_life_bars', false),
+  create_toggle_menu_item('Hide Meters', 'Yes', 'No', 'r', 'l', TRAINING_SETTINGS.TRAINING_OPTIONS, 'hide_meters', false),
+  create_separator_menu_item(),
   create_separator_menu_item(),
   create_generic_menu_item(string.format('Press %s to default', manager.ui:get_general_input_setting(manager.machine.ioport:token_to_input_type('UI_CLEAR'))), '', 'off'),
   create_separator_menu_item(),
@@ -343,22 +346,22 @@ local game_settings_menu = {
 
 local extra_functions_menu = {
   create_heading_menu_item('Extra Functions'),
-  create_hotkeyable_menu_item('Return to Character Select', game_state.return_to_character_select),
-  create_hotkeyable_menu_item('Record Macro', macro.record_macro),
-  create_hotkeyable_menu_item('Play Macro', macro.load_macro),
+  create_hotkeyable_menu_item('Return to Character Select', GAME_STATE.return_to_character_select),
+  -- create_hotkeyable_menu_item('Record Macro', macro.record_macro),
+  -- create_hotkeyable_menu_item('Play Macro', macro.load_macro),
   create_separator_menu_item(),
 }
 
 local function load_hotkeys()
   local hotkeys = file_util.parse_json_file_to_object(SCRIPT_SETTINGS.hotkeys_settings_file)
   ---@diagnostic disable-next-line: param-type-mismatch
-    for _, hotkey in ipairs(hotkeys) do
-      for _, item in pairs(extra_functions_menu) do
-        if hotkey.desc == item.name and item.type == 'hotkeyable' then
-          item.hotkeys = { pressed = false, keys = manager.machine.input:seq_from_tokens(hotkey.keys) }
-        end
+  for _, hotkey in ipairs(hotkeys) do
+    for _, item in pairs(extra_functions_menu) do
+      if hotkey.desc == item.name and item.type == 'hotkeyable' then
+        item.hotkeys = { pressed = false, keys = manager.machine.input:seq_from_tokens(hotkey.keys) }
       end
     end
+  end
 end
 
 local function populate_dummy_menu()
@@ -417,7 +420,6 @@ local function save_hotkeys()
     file_util.parse_object_to_json_file(hotkeys, SCRIPT_SETTINGS.hotkeys_settings_file)
   end
 end
-
 
 -- don't look at this, you'll go insane
 local function populate_extra_functions()

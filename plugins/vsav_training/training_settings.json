@@ -1,23 +1,26 @@
 {
   "GAME_SETTINGS":{
-    "game_speed":3
-  },
-  "TRAINING_OPTIONS":{
-    "disable_taunts":false,
-    "blank_screen":false,
-    "show_hitboxes":true,
-    "fill_hitboxes":true,
-    "show_input_viewer":true,
-    "infinite_time":true
+    "game_speed":0
   },
   "DUMMY_SETTINGS":{
-    "p2_max_health":288,
+    "p1_delay_to_refill":0,
+    "p2_delay_to_refill":0,
+    "p1_infinite_health":true,
+    "p1_max_health":288,
     "p2_infinite_meter":true,
     "p1_infinite_meter":true,
-    "p2_infinite_health":true,
-    "p2_delay_to_refill":0,
-    "p1_delay_to_refill":0,
-    "p1_max_health":288,
-    "p1_infinite_health":true
+    "p2_max_health":288,
+    "p2_infinite_health":true
+  },
+  "TRAINING_OPTIONS":{
+    "hide_background":false,
+    "show_only_hitboxes":false,
+    "infinite_time":true,
+    "show_input_viewer":true,
+    "disable_taunts":false,
+    "hide_meters":false,
+    "fill_hitboxes":true,
+    "show_hitboxes":false,
+    "hide_life_bars":false
   }
 }

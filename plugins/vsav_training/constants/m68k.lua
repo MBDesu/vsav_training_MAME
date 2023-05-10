@@ -3,7 +3,7 @@ local reg = {
   A4 = 'A4', A5 = 'A5', A6 = 'A6', A7 = 'A7',
   D0 = 'D0', D1 = 'D1', D2 = 'D2', D3 = 'D3',
   D4 = 'D4', D5 = 'D5', D6 = 'D6', D7 = 'D7',
-  IR = 'IR', PC = 'PC', SR = 'SR'
+  IR = 'IR', PC = 'CURPC', SR = 'SR'
 }
 
 local ptr = {
@@ -14,7 +14,8 @@ local aux = {
   CURPC = 'CURPC',
   PREF_DATA = 'PREF_DATA',
   PREF_ADDR = 'PREF_ADDR',
-  CURFLAGS = 'CURFLAGS'
+  CURFLAGS = 'CURFLAGS',
+  rPC = 'rPC',
 }
 
 local ccr_flag = { C = 'C', V = 'V', Z = 'Z', N = 'N', X = 'X' }

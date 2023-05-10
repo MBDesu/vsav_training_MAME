@@ -1,10 +1,10 @@
 [{
-    "desc":"Return to Character Select",
-    "keys":"JOYCODE_1_BUTTON7"
+    "keys":"JOYCODE_1_BUTTON7",
+    "desc":"Return to Character Select"
   },{
-    "desc":"Record Macro",
-    "keys":"JOYCODE_1_SLIDER1_NEG_SWITCH"
+    "keys":"JOYCODE_1_BUTTON5",
+    "desc":"Record Macro"
   },{
-    "desc":"Play Macro",
-    "keys":"JOYCODE_1_BUTTON5"
+    "keys":"JOYCODE_1_SLIDER1_NEG_SWITCH",
+    "desc":"Play Macro"
   }]

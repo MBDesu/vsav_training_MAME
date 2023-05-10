@@ -3,6 +3,8 @@
 -- for the case where an input is followed by a single comma being interpreted
 -- as <input> -> wait two frames needs to be fixed
 -- really, I think just writing the logic for holds would fix the whole thing
+-- TODO: see how MAME's inputmacro fares by comparison. Might be better to just
+-- use that.
 local input = require './vsav_training/utils/input-util'
 local image_util = require './vsav_training/utils/image-util'
 
@@ -341,7 +343,7 @@ emu.register_frame_done(function()
   end
 end)
 
-emu.register_stop(function()
+emu.add_machine_stop_notifier(function()
   play_icon_texture:free()
   record_icon_texture:free()
 end)

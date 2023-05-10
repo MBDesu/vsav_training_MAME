@@ -8,7 +8,7 @@ local input = require './vsav_training/utils/input-util'
 
 local selected_stage = nil
 local was_coin_pressed_last_frame = false
-local stage_bp = 0
+local stage_bp = -1
 
 local function resolve_char_id_to_stage_value(char_id)
   if     char_id == character_data.CHARACTER_ID['Bulleta']   then return stage_data['STAGE_VALUES'].WarAgony
@@ -39,9 +39,9 @@ local function select_stage()
   if is_coin_pressed and not was_coin_pressed_last_frame then
     was_coin_pressed_last_frame = true
     selected_stage = resolve_char_id_to_stage_value(m.rbu(mem_map.player_data.p1_base_addr + mem_map.player_data.char_sel_cursor_pos.offset))
-    if stage_bp > 0 then
+    if stage_bp > -1 then
       cpu.debug:bpclear(stage_bp)
-      stage_bp = 0
+      stage_bp = -1
     end
     if selected_stage ~= nil then
       stage_bp = cpu.debug:bpset(STAGE_WRITE_FUNC_MEMCPY_ADDR, '', 'D0 = #' .. tostring(selected_stage) .. '; g')
