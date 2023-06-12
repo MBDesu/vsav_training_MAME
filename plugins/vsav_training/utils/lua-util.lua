@@ -114,3 +114,17 @@ function CREATE_2D_ARRAY_FROM_1D_ARRAY(tbl, row_length)
   end
   return result
 end
+
+function TABLE_CONTAINS(tbl, val)
+  for _, v in pairs(tbl) do
+    if v == val then return true end
+  end
+  return false
+end
+
+function INDEX_OF(tbl, val)
+  for i = 1, #tbl do
+    if tbl[i] == val then return i end
+  end
+  return 0
+end

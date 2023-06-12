@@ -110,5 +110,15 @@ return {
     pressed.P1 = FILTER_TABLE_BY_VALUE(p1, filter)
     pressed.P2 = FILTER_TABLE_BY_VALUE(p2, filter)
     return pressed
-  end
+  end,
+  ['activate_inputs'] = function(inputs)
+    for _, v in pairs(inputs) do
+      p2[v].field:set_value(1)
+    end
+  end,
+  ['deactivate_inputs'] = function(inputs)
+    for _, v in pairs(inputs) do
+      p2[v].field:set_value(0)
+    end
+  end,
 }

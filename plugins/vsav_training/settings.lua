@@ -6,6 +6,7 @@ TRAINING_SETTINGS = {
     p1_delay_to_refill = 0,
     p2_infinite_health = true,
     p2_infinite_meter = true,
+    p2_hold_direction = 'N',
     p2_max_health = 288,
     p2_delay_to_refill = 0,
   },

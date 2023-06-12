@@ -57,11 +57,39 @@ local function set_integer_value(menu_item, state)
   return true, true
 end
 
+local function set_labeled_value(menu_item, state)
+  print(menu_item.current_index, state)
+  if state ~= menu_item.current_index then
+    local max = #menu_item.display_labels
+    local min = 1
+    if state < max then
+      if state > min then
+        menu_item.nav_label = 'lr'
+      else
+        menu_item.nav_label = 'r'
+      end
+    else
+      menu_item.nav_label = 'l'
+    end
+    menu_item.display_value = menu_item.display_labels[state]
+    menu_item.current_index = state
+    if menu_item.config_obj then
+      menu_item.config_obj.object[menu_item.config_obj.property_name] = menu_item.display_value
+    end
+    file_util.save_training_settings()
+    return true, true
+  else
+    return state, false
+  end
+end
+
 local function set_value(menu_item, state)
   if menu_item.type == 'toggle' then
     return toggle_set_enabled(menu_item, state)
   elseif menu_item.type == 'integer' then
     return set_integer_value(menu_item, state)
+  elseif menu_item.type == 'labeled' then
+    return set_labeled_value(menu_item, state)
   end
 end
 
@@ -169,6 +197,47 @@ local function create_integer_menu_item(name, min_value, max_value, setting_obje
   }
 end
 
+---Creates a labeled menu item. One that has strings for display and literal
+---values.
+---@param name string The name of the menu entry
+---@param label_values table<string> A table of the possible values
+---@param setting_object table The properties object that contains the property that controls this value
+---@param setting_property string The property that controls this value on the `setting_object`
+---@param default_value string The default display value (that maps to the actual default value)
+---@return table|nil labeled_menu_item `nil` if an error occurs
+local function create_labeled_menu_item(name, label_values, setting_object, setting_property, default_value)
+  if #label_values < 1 then return nil end
+  local display_value = default_value
+  local current_index = INDEX_OF(label_values, display_value)
+  if current_index < 1 then return nil end
+  local nav_label = 'lr'
+  if current_index == #label_values then
+    nav_label = 'l'
+  elseif current_index == 1 then
+    if current_index < #label_values then nav_label = 'lr'
+    else nav_label = '' end
+  end
+  local config_obj = {
+    object = setting_object,
+    property_name = setting_property,
+  }
+  if not setting_object or not setting_property then
+    config_obj = nil
+  else
+    display_value = config_obj.object[config_obj.property_name]
+  end
+  return {
+    name = name,
+    display_value = display_value,
+    display_labels = label_values,
+    current_index = current_index,
+    nav_label = nav_label,
+    config_obj = config_obj,
+    set_value = set_value,
+    type = 'labeled'
+  }
+end
+
 local function handle_integer_menu_item_change(menu_item, event)
   local change = nil
   local did_select_menu_item = event == 'select'
@@ -207,6 +276,27 @@ local function handle_integer_menu_item_change(menu_item, event)
   return change
 end
 
+local function handle_labeled_menu_item_change(menu_item, event)
+  local current_index = menu_item.current_index
+  local max = #menu_item.display_labels
+  local min = 1
+  local new_index = current_index
+  if event == 'left' then
+    new_index = new_index - 1
+  elseif event == 'right' then
+    new_index = new_index + 1
+  end
+  if new_index < max then
+    if new_index > min then
+    else
+      new_index = min
+    end
+  else
+    new_index = max
+  end
+  return new_index
+end
+
 local function handle_menu_change(menu, menu_item, event)
   if not menu_item then return false end
   if event == 'clear' then
@@ -221,6 +311,10 @@ local function handle_menu_change(menu, menu_item, event)
     end
   elseif menu_item.type == 'integer' then
     local change = handle_integer_menu_item_change(menu_item, event)
+    local state, chg = menu_item:set_value(change)
+    return state, chg
+  elseif menu_item.type == 'labeled' then
+    local change = handle_labeled_menu_item_change(menu_item, event)
     local state, chg = menu_item:set_value(change)
     return state, chg
   elseif menu_item.type == 'default all' then
@@ -309,6 +403,7 @@ local dummy_settings_menu = {
   create_toggle_menu_item('P2 Infinite Meter', 'On', 'Off', 'r', 'l', TRAINING_SETTINGS.DUMMY_SETTINGS, 'p2_infinite_meter', true),
   create_integer_menu_item('P2 Max Health', 1, 288, TRAINING_SETTINGS.DUMMY_SETTINGS, 'p2_max_health', 288),
   create_integer_menu_item('P2 Refill Health Delay (seconds)', 0, 60, TRAINING_SETTINGS.DUMMY_SETTINGS, 'p2_delay_to_refill', 0),
+  create_labeled_menu_item('P2 Hold Direction', { 'DB', 'B', 'UB', 'D', 'N', 'U', 'DF', 'F', 'UF' }, TRAINING_SETTINGS.DUMMY_SETTINGS, 'p2_hold_direction', 'N'),
   create_separator_menu_item(),
   create_generic_menu_item(string.format('Press %s to default', manager.ui:get_general_input_setting(manager.machine.ioport:token_to_input_type('UI_CLEAR'))), '', 'off'),
   create_separator_menu_item(),

@@ -1,6 +1,7 @@
+local input = require './vsav_training/utils/input-util'
+local m = require './vsav_training/utils/memory-util'
 local mem_map = require './vsav_training/constants/memory-map'
 local player_data = require './vsav_training/constants/player-data'
-local m = require './vsav_training/utils/memory-util'
 
 local p1_base_addr = mem_map.player_data.p1_base_addr
 local p2_base_addr = mem_map.player_data.p2_base_addr
@@ -10,11 +11,15 @@ local player_state = {
     is_hurt = false,
     was_hurt = false,
     last_hurt = 0,
+    last_holding = 'N',
+    last_facing = 'right',
   },
   {
     is_hurt = false,
     was_hurt = false,
     last_hurt = 0,
+    last_holding = 'N',
+    last_facing = 'left',
   }
 }
 
@@ -25,6 +30,41 @@ end
 
 local function set_player_meter(player_base_addr, value)
   m.wbu(player_base_addr + mem_map.player_data.meter_stock.offset, value or 0x63)
+end
+
+local function set_player_hold_direction()
+  local new_dir = TRAINING_SETTINGS.DUMMY_SETTINGS.p2_hold_direction
+  local old_dir = player_state[2].last_holding
+
+  if new_dir == 'N' and old_dir ~= 'N' then
+    input.deactivate_inputs({'UP', 'DOWN', 'LEFT', 'RIGHT'});
+    player_state[2].last_holding = 'N'
+    return
+  end
+
+  if new_dir ~= old_dir then
+    input.deactivate_inputs({'UP', 'DOWN', 'LEFT', 'RIGHT'});
+    local inputs = {}
+    if new_dir:find('D') then inputs[#inputs + 1] = 'DOWN' end
+    if new_dir:find('U') then inputs[#inputs + 1] = 'UP' end
+    if new_dir:find('B') then
+      if player_state[2].facing == 'left' then
+        inputs[#inputs + 1] = 'BACK'
+      else
+        inputs[#inputs + 1] = 'FORWARD'
+      end
+    end
+    if new_dir:find('F') then
+      if player_state[2].facing == 'left' then
+        inputs[#inputs + 1] = 'FORWARD'
+      else
+        inputs[#inputs + 1] = 'BACK'
+      end
+    end
+    player_state[2].last_holding = new_dir
+    input.activate_inputs(inputs)
+  end
+
 end
 
 local function update_hurt_timer(player_num, player_base_addr)
@@ -39,6 +79,14 @@ local function update_hurt_timer(player_num, player_base_addr)
     player_status.last_hurt = manager.machine.screens[':screen']:frame_number()
     player_status.was_hurt = false
   end
+end
+
+local function update_player_facing()
+  local p1_face = m.rbu(p1_base_addr + mem_map.player_data.flip_x)
+  local p2_face = m.rbu(p2_base_addr + mem_map.player_data.flip_x)
+  if p1_face == 0x1 then player_state[1].last_facing = 'right' else player_state[1].last_facing = 'left' end
+  if p2_face == 0x1 then player_state[2].last_facing = 'right' else player_state[2].last_facing = 'left' end
+
 end
 
 local function update_player_health()
@@ -69,8 +117,8 @@ end
 
 local function disable_taunts()
   if TRAINING_SETTINGS.TRAINING_OPTIONS.disable_taunts then
-    m.wbu(mem_map.player_data.p1_base_addr + mem_map.player_data.remaining_taunts.offset, 0x0)
-    m.wbu(mem_map.player_data.p2_base_addr + mem_map.player_data.remaining_taunts.offset, 0x0)
+    m.wbu(p1_base_addr + mem_map.player_data.remaining_taunts.offset, 0x0)
+    m.wbu(p2_base_addr + mem_map.player_data.remaining_taunts.offset, 0x0)
   end
 end
 
@@ -79,12 +127,15 @@ local function reset_dummy_state()
     player_state[i].is_hurt = false
     player_state[i].was_hurt = false
     player_state[i].last_hurt = 0
+    player_state[i].last_holding = 'N'
   end
 end
 
 local function update_player_parameters()
   update_player_health()
   update_player_meter()
+  set_player_hold_direction()
+  update_player_facing()
   disable_taunts()
 end
 
