@@ -132,10 +132,10 @@ local function reset_dummy_state()
 end
 
 local function update_player_parameters()
+  update_player_facing()
   update_player_health()
   update_player_meter()
   set_player_hold_direction()
-  update_player_facing()
   disable_taunts()
 end
 

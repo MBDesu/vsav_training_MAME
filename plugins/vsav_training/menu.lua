@@ -58,7 +58,6 @@ local function set_integer_value(menu_item, state)
 end
 
 local function set_labeled_value(menu_item, state)
-  print(menu_item.current_index, state)
   if state ~= menu_item.current_index then
     local max = #menu_item.display_labels
     local min = 1

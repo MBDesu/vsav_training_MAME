@@ -1,8 +1,9 @@
 ---this script is meant to be a singleton; its single instance is instantiated
 ---in [`init.lua`](../init.lua)
+local input = require './vsav_training/utils/input-util'
+local m = require './vsav_training/utils/memory-util'
 local mem_map = require './vsav_training/constants/memory-map'
 local player_data = require './vsav_training/constants/player-data'
-local m = require './vsav_training/utils/memory-util'
 
 local p1_base_addr = mem_map.player_data.p1_base_addr
 local p2_base_addr = mem_map.player_data.p2_base_addr
@@ -20,6 +21,8 @@ local player_state = {
     poison_gas_timer = 0,
     hitstop_timer = 0,
     pushback_timer = 0,
+    last_holding = 'N',
+    last_facing = 'right',
   },
   {
     is_hurt   = false,
@@ -29,6 +32,8 @@ local player_state = {
     poison_gas_timer = 0,
     hitstop_timer = 0,
     pushback_timer = 0,
+    last_holding = 'N',
+    last_facing = 'left',
   }
 }
 
@@ -52,6 +57,59 @@ local function set_player_meter(player_base_addr, value)
   m.wbu(player_base_addr + mem_map.player_data.meter_stock.offset, value or 0x63)
 end
 
+-- TODO: refactor
+local function update_player_hold_direction(facing_changed)
+  local new_dir = TRAINING_SETTINGS.DUMMY_SETTINGS.p2_hold_direction
+  local old_dir = player_state[2].last_holding
+
+  if new_dir == 'N' and old_dir ~= 'N' then
+    input.deactivate_inputs({ 'UP', 'DOWN', 'LEFT', 'RIGHT' });
+    player_state[2].last_holding = 'N'
+    return
+  end
+
+  if new_dir ~= old_dir then
+    input.deactivate_inputs({ 'UP', 'DOWN', 'LEFT', 'RIGHT' });
+    local inputs = {}
+    if new_dir:find('D') then inputs[#inputs + 1] = 'DOWN' end
+    if new_dir:find('U') then inputs[#inputs + 1] = 'UP' end
+    if new_dir:find('B') then
+      if player_state[2].last_facing == 'left' then
+        inputs[#inputs + 1] = 'RIGHT'
+      else
+        inputs[#inputs + 1] = 'LEFT'
+      end
+    end
+    if new_dir:find('F') then
+      if player_state[2].last_facing == 'left' then
+        inputs[#inputs + 1] = 'LEFT'
+      else
+        inputs[#inputs + 1] = 'RIGHT'
+      end
+    end
+    player_state[2].last_holding = new_dir
+    input.activate_inputs(inputs)
+  elseif facing_changed then
+    if player_state[2].last_holding:find('B') then
+      if player_state[2].last_facing == 'left' then
+        input.deactivate_inputs({ 'LEFT' })
+        input.activate_inputs({ 'RIGHT' })
+      else
+        input.deactivate_inputs({ 'RIGHT' })
+        input.activate_inputs({ 'LEFT' })
+      end
+    elseif player_state[2].last_holding:find('F') then
+      if player_state[2].last_facing == 'left' then
+        input.deactivate_inputs({ 'RIGHT' })
+        input.activate_inputs({ 'LEFT' })
+      else
+        input.deactivate_inputs({ 'LEFT' })
+        input.activate_inputs({ 'RIGHT' })
+      end
+    end
+  end
+end
+
 local function update_hurt_timer(player_num, player_base_addr)
   local player_status = player_state[player_num]
   local status = m.rbu(player_base_addr + mem_map.player_data.status_1.offset)
@@ -63,6 +121,33 @@ local function update_hurt_timer(player_num, player_base_addr)
   if player_status.was_hurt and not is_hurt then
     player_status.last_hurt = manager.machine.screens[':screen']:frame_number()
     player_status.was_hurt = false
+  end
+end
+
+local function update_player_facing()
+  local p1_face = m.rbu(p1_base_addr + mem_map.player_data.flip_x.offset)
+  local p2_face = m.rbu(p2_base_addr + mem_map.player_data.flip_x.offset)
+
+  local p1_new_facing = player_state[1].last_facing
+  local p2_new_facing = player_state[2].last_facing
+
+  if p1_face == 0x1 then
+    p1_new_facing = 'right'
+  elseif p1_face == 0x0 then
+    p1_new_facing = 'left'
+  end
+  if p2_face == 0x1 then
+    p2_new_facing = 'right'
+  elseif p2_face == 0x0 then
+    p2_new_facing = 'left'
+  end
+
+  if p1_new_facing ~= player_state[1].last_facing then
+    player_state[1].last_facing = p1_new_facing
+  end
+  if p2_new_facing ~= player_state[2].last_facing then
+    player_state[2].last_facing = p2_new_facing
+    update_player_hold_direction(true)
   end
 end
 
@@ -115,6 +200,8 @@ end
 
 local function update_player_parameters()
   if GAME_STATE and GAME_STATE.match_has_begun() then
+    update_player_facing()
+    update_player_hold_direction()
     update_player_health()
     update_player_meter()
     update_player_state()

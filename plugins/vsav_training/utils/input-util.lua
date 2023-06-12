@@ -1,3 +1,4 @@
+-- TODO: FIXME: put this in a service
 local ioport = manager.machine.ioport
 
 ---@alias inputs table<string, { field: ioport_field | nil, default_name: string, is_pressed: (fun(): boolean) | nil }>
@@ -113,11 +114,13 @@ return {
   end,
   ['activate_inputs'] = function(inputs)
     for _, v in pairs(inputs) do
+      print('activating', v)
       p2[v].field:set_value(1)
     end
   end,
   ['deactivate_inputs'] = function(inputs)
     for _, v in pairs(inputs) do
+      print('deactivating', v)
       p2[v].field:set_value(0)
     end
   end,
